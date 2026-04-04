@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Envoyer {{ facture.numero }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="edit-page">
+    <div class="edit-head">
+      <div>
+        <h1>Envoyer la facture</h1>
+        <p class="muted">
+          {{ facture.numero }} — {{ facture.get_type_piece_display }} — Réf colis : {{ facture.ref_colis }}
+        </p>
+      </div>
+      <div class="edit-head-actions">
+        <a href="{% url 'facture_detail' facture.pk %}" class="btn ghost">Retour</a>
+      </div>
+    </div>
+
+    <div class="edit-card">
+      <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="form-errors">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <div class="edit-grid">
+          <label class="span-3">
+            {{ form.email_destinataire.label }}
+            {{ form.email_destinataire }}
+            {{ form.email_destinataire.errors }}
+          </label>
+
+          <label class="span-3">
+            {{ form.sujet.label }}
+            {{ form.sujet }}
+            {{ form.sujet.errors }}
+          </label>
+
+          <label class="span-3">
+            {{ form.message.label }}
+            {{ form.message }}
+            {{ form.message.errors }}
+          </label>
+        </div>
+
+        <div class="form-actions" style="margin-top:18px;">
+          <a href="{% url 'facture_pdf' facture.pk %}" class="btn ghost" target="_blank">Aperçu PDF</a>
+          <button type="submit" class="btn">Envoyer la facture</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

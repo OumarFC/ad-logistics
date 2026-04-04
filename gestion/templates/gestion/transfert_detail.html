@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Détail transfert {{ obj.reference }}{% endblock %}
+
+{% block content %}
+<div class="section">
+  <div class="container">
+    <h1>Détail du transfert {{ obj.reference }}</h1>
+
+    <div class="card">
+      <p><strong>Référence :</strong> {{ obj.reference }}</p>
+      <p><strong>Agent :</strong> {{ obj.agent_nom|default:"-" }}</p>
+      <p><strong>Statut :</strong> {{ obj.get_statut_display }}</p>
+      <p><strong>Date transfert :</strong> {{ obj.date_transfert }}</p>
+      <p><strong>Date retrait :</strong> {{ obj.date_retrait|default:"-" }}</p>
+
+      <hr>
+
+      <p><strong>Expéditeur :</strong> {{ obj.expediteur_nom }}</p>
+      <p><strong>Téléphone expéditeur :</strong> {{ obj.expediteur_tel }}</p>
+
+      <p><strong>Destinataire :</strong> {{ obj.destinataire_nom }}</p>
+      <p><strong>Téléphone destinataire :</strong> {{ obj.destinataire_tel }}</p>
+
+      <hr>
+
+      <p><strong>Montant envoyé :</strong> {{ obj.montant_envoye }} {{ obj.devise_envoi }}</p>
+      <p><strong>Taux :</strong> {{ obj.taux_transfert }}</p>
+      <p><strong>Montant à recevoir :</strong> {{ obj.montant_reception }} {{ obj.devise_reception }}</p>
+
+      <p><strong>Description :</strong> {{ obj.description|default:"-" }}</p>
+    </div>
+
+    <div style="margin-top:20px;">
+      <a href="/app/#envoye" class="btn">Retour</a>
+      <a href="{% url 'transfert_edit' obj.id %}" class="btn ghost">Modifier</a>
+      <a href="{% url 'transfert_print' obj.id %}" class="btn ghost" target="_blank">Imprimer</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

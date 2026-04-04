@@ -1,0 +1,106 @@
+{% extends "administration/base_admin.html" %}
+{% block title %}{{ titre_page }}{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">{{ titre_page }}</h2>
+            <a href="{% url 'admin_liste_factures' %}" class="btn btn-secondary">
+                Retour
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Entreprise cliente</label>
+                            {{ form.entreprise }}
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Type de facture</label>
+                            {{ form.type_facture }}
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Statut</label>
+                            {{ form.statut }}
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Date d'émission</label>
+                            {{ form.date_emission }}
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Date d'échéance</label>
+                            {{ form.date_echeance }}
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Période début</label>
+                            {{ form.periode_debut }}
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Période fin</label>
+                            {{ form.periode_fin }}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Montant HT</label>
+                            {{ form.montant_ht }}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">TVA</label>
+                            {{ form.tva }}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Devise</label>
+                            {{ form.devise }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Mode de paiement</label>
+                            {{ form.mode_paiement }}
+                        </div>
+
+                        <div class="col-md-6">
+                            {% if facture %}
+                            <label class="form-label">Numéro facture</label>
+                            <input type="text" class="form-control" value="{{ facture.numero }}" disabled>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Description</label>
+                            {{ form.description }}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Observations</label>
+                            {{ form.observations }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{% url 'admin_liste_factures' %}" class="btn btn-light border">
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

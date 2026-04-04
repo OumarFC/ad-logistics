@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ obj.type_piece }} - {{ obj.ref_colis }}</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:24px}
+    h1{font-size:22px;margin:0 0 8px}
+    .muted{color:#555}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .box{border:1px solid #ccc;border-radius:8px;padding:12px}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    td,th{border:1px solid #ddd;padding:8px;text-align:left}
+    @media print{ .noprint{display:none} body{padding:0} }
+  </style>
+</head>
+<body>
+  <h1>AD Logistics & Services</h1>
+  <div class="muted">Imprimé le {{ today|date:"d/m/Y H:i" }}</div>
+
+  <h2>{{ obj.type_piece }} — Réf colis: {{ obj.ref_colis }} — Date: {{ obj.date_colis }}</h2>
+
+  <div class="grid">
+    <div class="box">
+      <h3>Expéditeur</h3>
+      <div>{{ obj.exp_nom }} {{ obj.exp_prenom }}</div>
+      <div>{{ obj.exp_tel }}</div>
+      <div>{{ obj.exp_mail }}</div>
+      <div>{{ obj.exp_adresse }}</div>
+    </div>
+    <div class="box">
+      <h3>Destinataire</h3>
+      <div>{{ obj.des_nom }} {{ obj.des_prenom }}</div>
+      <div>{{ obj.des_tel }}</div>
+      <div>{{ obj.des_mail }}</div>
+      <div>Agence: {{ obj.des_agence }}</div>
+    </div>
+  </div>
+
+  <table>
+    <thead><tr><th>Description</th><th>Montant</th><th>Devise</th><th>Qui paye</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>{{ obj.description }}</td>
+        <td>{{ obj.montant }}</td>
+        <td>{{ obj.devise }}</td>
+        <td>{{ obj.get_qui_paye_display }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><em>Produit :</em> {{ obj.produit }}</p>
+
+  <button class="noprint" onclick="window.print()">Imprimer</button>
+</body>
+</html>

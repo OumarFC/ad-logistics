@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Suivi transfert {{ obj.reference }} | AD Logistics</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#f4f7fb; color:#1f2937; }
+    .wrap { max-width:920px; margin:0 auto; padding:24px 16px 40px; }
+    .hero { background:linear-gradient(135deg,#0f172a,#1d4ed8); color:#fff; border-radius:18px; padding:28px 24px; }
+    .brand { font-size:30px; font-weight:800; }
+    .sub { margin-top:6px; font-size:14px; }
+    .ref { margin-top:18px; background:#fff; color:#111; border-radius:16px; padding:18px; }
+    .ref .lab { font-size:12px; text-transform:uppercase; color:#6b7280; }
+    .ref .val { font-size:34px; font-weight:900; margin-top:6px; }
+    .card { background:#fff; border-radius:16px; padding:20px; box-shadow:0 10px 30px rgba(15,23,42,.08); margin-top:18px; }
+    .badge { display:inline-block; padding:8px 14px; border-radius:999px; font-weight:700; }
+    .badge.ok { background:#dcfce7; color:#166534; }
+    .badge.att { background:#fef3c7; color:#92400e; }
+    .badge.paye { background:#dbeafe; color:#1d4ed8; }
+    .progress { margin-top:14px; }
+    .bar { height:12px; background:#e5e7eb; border-radius:999px; overflow:hidden; }
+    .fill { height:100%; width:{{ progress_percent }}%; background:linear-gradient(90deg,#2563eb,#0ea5e9); }
+    .line { margin:8px 0; font-size:15px; line-height:1.45; }
+    .grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:16px; }
+    .kpi { background:#f8fafc; border:1px solid #e5e7eb; border-radius:12px; padding:14px; text-align:center; }
+    .kpi .l { font-size:12px; color:#6b7280; text-transform:uppercase; }
+    .kpi .v { font-size:20px; font-weight:800; margin-top:6px; }
+    @media (max-width:760px){ .grid{grid-template-columns:1fr;} .ref .val{font-size:28px;} }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="brand">AD Logistics & Services</div>
+    <div class="sub">Suivi public de transfert d’argent</div>
+    <div class="ref">
+      <div class="lab">Référence transfert</div>
+      <div class="val">{{ obj.reference }}</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge {{ status_class }}">{{ obj.get_statut_display }}</span>
+    <div class="line" style="margin-top:12px;">{{ status_message }}</div>
+
+    <div class="progress">
+      <div class="line"><strong>Progression :</strong> {{ progress_percent }}%</div>
+      <div class="bar"><div class="fill"></div></div>
+    </div>
+
+    <div class="grid">
+      <div class="kpi">
+        <div class="l">Envoi</div>
+        <div class="v">{{ obj.montant_envoye }} {{ obj.devise_envoi }}</div>
+      </div>
+      <div class="kpi">
+        <div class="l">Taux</div>
+        <div class="v">{{ obj.taux_transfert }}</div>
+      </div>
+      <div class="kpi">
+        <div class="l">Réception</div>
+        <div class="v">{{ obj.montant_reception }} {{ obj.devise_reception }}</div>
+      </div>
+    </div>
+
+    <div class="line" style="margin-top:16px;"><strong>Expéditeur :</strong> {{ obj.expediteur_nom }}</div>
+    <div class="line"><strong>Destinataire :</strong> {{ obj.destinataire_nom }}</div>
+    <div class="line"><strong>Date transfert :</strong> {{ obj.date_transfert }}</div>
+    <div class="line"><strong>Date retrait :</strong> {{ obj.date_retrait|default:"-" }}</div>
+    <div class="line"><strong>Agent :</strong> {{ obj.agent_nom|default:"-" }}</div>
+  </div>
+</div>
+</body>
+</html><!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Suivi transfert {{ obj.reference }} | AD Logistics</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#f4f7fb; color:#1f2937; }
+    .wrap { max-width:920px; margin:0 auto; padding:24px 16px 40px; }
+    .hero { background:linear-gradient(135deg,#0f172a,#1d4ed8); color:#fff; border-radius:18px; padding:28px 24px; }
+    .brand { font-size:30px; font-weight:800; }
+    .sub { margin-top:6px; font-size:14px; }
+    .ref { margin-top:18px; background:#fff; color:#111; border-radius:16px; padding:18px; }
+    .ref .lab { font-size:12px; text-transform:uppercase; color:#6b7280; }
+    .ref .val { font-size:34px; font-weight:900; margin-top:6px; }
+    .card { background:#fff; border-radius:16px; padding:20px; box-shadow:0 10px 30px rgba(15,23,42,.08); margin-top:18px; }
+    .badge { display:inline-block; padding:8px 14px; border-radius:999px; font-weight:700; }
+    .badge.ok { background:#dcfce7; color:#166534; }
+    .badge.att { background:#fef3c7; color:#92400e; }
+    .badge.paye { background:#dbeafe; color:#1d4ed8; }
+    .progress { margin-top:14px; }
+    .bar { height:12px; background:#e5e7eb; border-radius:999px; overflow:hidden; }
+    .fill { height:100%; width:{{ progress_percent }}%; background:linear-gradient(90deg,#2563eb,#0ea5e9); }
+    .line { margin:8px 0; font-size:15px; line-height:1.45; }
+    .grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:16px; }
+    .kpi { background:#f8fafc; border:1px solid #e5e7eb; border-radius:12px; padding:14px; text-align:center; }
+    .kpi .l { font-size:12px; color:#6b7280; text-transform:uppercase; }
+    .kpi .v { font-size:20px; font-weight:800; margin-top:6px; }
+    @media (max-width:760px){ .grid{grid-template-columns:1fr;} .ref .val{font-size:28px;} }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="brand">AD Logistics & Services</div>
+    <div class="sub">Suivi public de transfert d’argent</div>
+    <div class="ref">
+      <div class="lab">Référence transfert</div>
+      <div class="val">{{ obj.reference }}</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge {{ status_class }}">{{ obj.get_statut_display }}</span>
+    <div class="line" style="margin-top:12px;">{{ status_message }}</div>
+
+    <div class="progress">
+      <div class="line"><strong>Progression :</strong> {{ progress_percent }}%</div>
+      <div class="bar"><div class="fill"></div></div>
+    </div>
+
+    <div class="grid">
+      <div class="kpi">
+        <div class="l">Envoi</div>
+        <div class="v">{{ obj.montant_envoye }} {{ obj.devise_envoi }}</div>
+      </div>
+      <div class="kpi">
+        <div class="l">Taux</div>
+        <div class="v">{{ obj.taux_transfert }}</div>
+      </div>
+      <div class="kpi">
+        <div class="l">Réception</div>
+        <div class="v">{{ obj.montant_reception }} {{ obj.devise_reception }}</div>
+      </div>
+    </div>
+
+    <div class="line" style="margin-top:16px;"><strong>Expéditeur :</strong> {{ obj.expediteur_nom }}</div>
+    <div class="line"><strong>Destinataire :</strong> {{ obj.destinataire_nom }}</div>
+    <div class="line"><strong>Date transfert :</strong> {{ obj.date_transfert }}</div>
+    <div class="line"><strong>Date retrait :</strong> {{ obj.date_retrait|default:"-" }}</div>
+    <div class="line"><strong>Agent :</strong> {{ obj.agent_nom|default:"-" }}</div>
+  </div>
+</div>
+</body>
+</html>

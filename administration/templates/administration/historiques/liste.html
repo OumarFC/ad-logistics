@@ -1,0 +1,86 @@
+{% extends "administration/base_admin.html" %}
+{% block title %}Historique des actions{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Historique des actions</h2>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2">
+            <div class="col-md-3">
+                <select name="entreprise" class="form-select">
+                    <option value="">Toutes les entreprises</option>
+                    {% for ent in entreprises %}
+                        <option value="{{ ent.id }}" {% if entreprise_id == ent.id|stringformat:"s" %}selected{% endif %}>
+                            {{ ent.nom }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <select name="action" class="form-select">
+                    <option value="">Toutes les actions</option>
+                    {% for code, label in actions %}
+                        <option value="{{ code }}" {% if action_selected == code %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <input type="text" name="q" value="{{ q }}" class="form-control"
+                       placeholder="Rechercher par objet, description, module, utilisateur...">
+            </div>
+
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-outline-primary">Filtrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Utilisateur</th>
+                        <th>Entreprise</th>
+                        <th>Action</th>
+                        <th>Module</th>
+                        <th>Objet</th>
+                        <th>IP</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in historiques %}
+                    <tr>
+                        <td>{{ h.date_action|date:"d/m/Y H:i" }}</td>
+                        <td>{{ h.utilisateur.username|default:"-" }}</td>
+                        <td>{{ h.entreprise.nom|default:"-" }}</td>
+                        <td>{{ h.get_action_display }}</td>
+                        <td>{{ h.module }}</td>
+                        <td>{{ h.objet }}</td>
+                        <td>{{ h.ip_address|default:"-" }}</td>
+                        <td>{{ h.description|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            Aucun historique trouvé.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

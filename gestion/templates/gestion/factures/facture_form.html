@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="mb-1">{{ page_title }}</h2>
+      <p class="text-muted mb-0">
+        {% if facture %}
+          {{ facture.numero }} - {{ facture.get_type_piece_display }}
+        {% else %}
+          Création d’une nouvelle pièce de facturation
+        {% endif %}
+      </p>
+    </div>
+    <a href="{% url 'facture_list' %}" class="btn btn-outline-secondary">
+      ← Retour à la liste
+    </a>
+  </div>
+
+  <form method="post" class="card shadow-sm border-0">
+    {% csrf_token %}
+
+    <div class="card-body">
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <div class="row g-4">
+
+        <div class="col-12">
+          <h5 class="border-bottom pb-2">1. Informations générales</h5>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.type_piece.label }}</label>
+          {{ form.type_piece }}
+          {% for error in form.type_piece.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.statut.label }}</label>
+          {{ form.statut }}
+          {% for error in form.statut.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.date_facture.label }}</label>
+          {{ form.date_facture }}
+          {% for error in form.date_facture.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.date_echeance.label }}</label>
+          {{ form.date_echeance }}
+          {% for error in form.date_echeance.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-12 mt-2">
+          <h5 class="border-bottom pb-2">2. Informations colis / fret</h5>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.ref_colis.label }}</label>
+          {{ form.ref_colis }}
+          {% for error in form.ref_colis.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.date_colis.label }}</label>
+          {{ form.date_colis }}
+          {% for error in form.date_colis.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.produit.label }}</label>
+          {{ form.produit }}
+          {% for error in form.produit.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.des_agence.label }}</label>
+          {{ form.des_agence }}
+          {% for error in form.des_agence.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">{{ form.description.label }}</label>
+          {{ form.description }}
+          {% for error in form.description.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.poids_kg.label }}</label>
+          {{ form.poids_kg }}
+          {% for error in form.poids_kg.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">{{ form.nb_colis.label }}</label>
+          {{ form.nb_colis }}
+          {% for error in form.nb_colis.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-1 d-flex align-items-end">
+          <div class="form-check">
+            {{ form.livraison }}
+            <label class="form-check-label ms-1" for="{{ form.livraison.id_for_label }}">
+              Livraison
+            </label>
+          </div>
+        </div>
+
+        <div class="col-12 mt-2">
+          <h5 class="border-bottom pb-2">3. Expéditeur</h5>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.exp_nom.label }}</label>
+          {{ form.exp_nom }}
+          {% for error in form.exp_nom.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.exp_prenom.label }}</label>
+          {{ form.exp_prenom }}
+          {% for error in form.exp_prenom.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.exp_tel.label }}</label>
+          {{ form.exp_tel }}
+          {% for error in form.exp_tel.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.exp_mail.label }}</label>
+          {{ form.exp_mail }}
+          {% for error in form.exp_mail.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-12">
+          <label class="form-label">{{ form.exp_adresse.label }}</label>
+          {{ form.exp_adresse }}
+          {% for error in form.exp_adresse.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-12 mt-2">
+          <h5 class="border-bottom pb-2">4. Destinataire</h5>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.des_nom.label }}</label>
+          {{ form.des_nom }}
+          {% for error in form.des_nom.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.des_prenom.label }}</label>
+          {{ form.des_prenom }}
+          {% for error in form.des_prenom.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.des_tel.label }}</label>
+          {{ form.des_tel }}
+          {% for error in form.des_tel.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.des_mail.label }}</label>
+          {{ form.des_mail }}
+          {% for error in form.des_mail.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-12">
+          <label class="form-label">{{ form.des_adresse.label }}</label>
+          {{ form.des_adresse }}
+          {% for error in form.des_adresse.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-12 mt-2">
+          <h5 class="border-bottom pb-2">5. Facturation</h5>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">{{ form.qui_paye.label }}</label>
+          {{ form.qui_paye }}
+          {% for error in form.qui_paye.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">{{ form.devise.label }}</label>
+          {{ form.devise }}
+          {% for error in form.devise.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">{{ form.montant_ht.label }}</label>
+          {{ form.montant_ht }}
+          {% for error in form.montant_ht.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">{{ form.taux_tva.label }}</label>
+          {{ form.taux_tva }}
+          {% for error in form.taux_tva.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">{{ form.remise.label }}</label>
+          {{ form.remise }}
+          {% for error in form.remise.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">{{ form.montant_paye.label }}</label>
+          {{ form.montant_paye }}
+          {% for error in form.montant_paye.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">{{ form.note_client.label }}</label>
+          {{ form.note_client }}
+          {% for error in form.note_client.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">{{ form.note_interne.label }}</label>
+          {{ form.note_interne }}
+          {% for error in form.note_interne.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="card-footer bg-white d-flex flex-wrap gap-2 justify-content-between">
+      <div class="text-muted small">
+        {% if facture and facture.numero %}
+          Numéro : <strong>{{ facture.numero }}</strong>
+        {% else %}
+          Le numéro sera généré automatiquement à l’enregistrement.
+        {% endif %}
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="submit" name="action" value="save" class="btn btn-primary">
+          {{ submit_label }}
+        </button>
+
+        <button type="submit" name="action" value="save_validate" class="btn btn-success">
+          Enregistrer et valider
+        </button>
+
+        {% if facture %}
+          <a href="{% url 'facture_detail' facture.pk %}" class="btn btn-outline-dark">
+            Voir la fiche
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

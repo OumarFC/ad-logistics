@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}AD LOGISTICS & SERVICES | Fret maritimes & aériens{% endblock %}
+
+{% block content %}
+
+<section class="hero hero-adl">
+  <div class="container hero-inner">
+    <h1>AD LOGISTICS &amp; SERVICES</h1>
+    <p class="subtitle">FRET MARITIMES &amp; AÉRIENS</p>
+    <p class="pill-row">
+      <span class="pill red">RAPIDE</span>
+      <span class="pill orange">FIABLE</span>
+      <span class="pill green">SÉCURISÉ</span>
+    </p>
+    <div class="cta">
+      <a class="btn primary" href="#contact">Demander un devis</a>
+      <a class="btn ghost" href="#services">Voir nos services</a>
+    </div>
+    <p class="special">🇬🇳 Spécialisé vers la Guinée</p>
+  </div>
+</section>
+
+<section id="services" class="section">
+  <div class="container">
+    <h2>Nos services</h2>
+    <div class="grid">
+      <article class="card">
+        <div class="icon">✈️</div>
+        <h3>Fret aérien</h3>
+        <p>Solutions express et door-to-door vers l’Afrique et le monde.</p>
+      </article>
+      <article class="card">
+        <div class="icon">🚢</div>
+        <h3>Fret maritime</h3>
+        <p>FCL/LCL, délais maîtrisés, accompagnement documentaire complet.</p>
+      </article>
+      <article class="card">
+        <div class="icon">📦</div>
+        <h3>Colis &amp; e-commerce</h3>
+        <p>Collecte, emballage, étiquetage, suivi jusqu’à la livraison.</p>
+      </article>
+      <article class="card">
+        <div class="icon">🧾</div>
+        <h3>Douanes &amp; conformité</h3>
+        <p>Incoterms, factures, conseils réglementaires multi-pays.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="money" class="section muted">
+  <div class="container money-grid">
+    <div>
+      <h2>Transfert d’argent</h2>
+      <p>Envoyez en toute confiance avec nos partenaires :</p>
+      <ul class="brands">
+        <li><span class="badge ria">Ria Money Transfer</span></li>
+        <li><span class="badge om">Orange Money</span></li>
+      </ul>
+      <p class="hint">Spécialement vers l’Afrique, et <strong>vers la Guinée</strong>.</p>
+    </div>
+    <div class="flag-box">
+      <span class="flag-gn" aria-label="Guinée"></span>
+      <span class="flag-fr" aria-label="France"></span>
+      <div class="arrows">↔</div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="section">
+  <div class="container contact">
+    <div>
+      <h2>Contact &amp; Devis</h2>
+      <ul class="contact-list">
+        <li>📍 23, Rue Simart, 75018 Paris</li>
+        <li>📞 +33 6 02 04 53 29 · +33 7 75 72 93 22</li>
+        <li>✉️ adlogistics.fret@gmail.com</li>
+      </ul>
+      <p>Décrivez votre envoi (poids, dimensions, origine/destination) — nous répondons rapidement.</p>
+    </div>
+    <form class="contact-form" method="post" action="#">
+      {% csrf_token %}
+      <div class="row">
+        <input type="text" name="name" placeholder="Votre nom" required>
+        <input type="email" name="email" placeholder="Votre e-mail" required>
+      </div>
+      <div class="row">
+        <input type="text" name="from" placeholder="Origine (ville/pays)" required>
+        <input type="text" name="to" placeholder="Destination (ville/pays)" required>
+      </div>
+      <textarea name="details" rows="4" placeholder="Poids, dimensions, nature des marchandises…"></textarea>
+      <button class="btn primary" type="submit" disabled>Envoyer (à connecter)</button>
+      <small class="muted-note">Le formulaire sera relié à l’e-mail ensuite.</small>
+    </form>
+  </div>
+</section>
+
+{% endblock %}

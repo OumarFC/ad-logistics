@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Fret {{ obj.reference }}{% endblock %}
+
+{% block content %}
+<div class="section container">
+  <div class="ad-card detail-card">
+    <div class="detail-card__header">
+      <div>
+        <p class="detail-card__eyebrow">Fiche Fret</p>
+        <h1>Fret {{ obj.reference }}</h1>
+      </div>
+      <div class="detail-badge">
+        {{ obj.get_type_fret_display }}
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-item">
+        <span class="detail-label">Référence</span>
+        <span class="detail-value">{{ obj.reference }}</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">Type</span>
+        <span class="detail-value">{{ obj.get_type_fret_display }}</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">Poids</span>
+        <span class="detail-value">{{ obj.poids_kg }} kg</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">Prix</span>
+        <span class="detail-value">{{ obj.prix_fret_euros }} €</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">Expéditeur</span>
+        <span class="detail-value">{{ obj.expediteur_nom }}</span>
+        <span class="detail-subvalue">{{ obj.expediteur_tel }}</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">Destinataire</span>
+        <span class="detail-value">{{ obj.destinataire_nom }}</span>
+        <span class="detail-subvalue">{{ obj.destinataire_tel }}</span>
+      </div>
+    </div>
+
+    <div class="form-actions detail-actions">
+      <a class="btn ghost" href="/app/#recu">Retour</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

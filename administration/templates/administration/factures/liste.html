@@ -1,0 +1,95 @@
+{% extends "administration/base_admin.html" %}
+{% block title %}Factures{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Factures</h2>
+    <a href="{% url 'admin_ajouter_facture' %}" class="btn btn-primary">
+        + Nouvelle facture
+    </a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2">
+            <div class="col-md-3">
+                <select name="entreprise" class="form-select">
+                    <option value="">Toutes les entreprises</option>
+                    {% for ent in entreprises %}
+                        <option value="{{ ent.id }}" {% if entreprise_id == ent.id|stringformat:"s" %}selected{% endif %}>
+                            {{ ent.nom }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <select name="statut" class="form-select">
+                    <option value="">Tous les statuts</option>
+                    <option value="BROUILLON" {% if statut_selected == "BROUILLON" %}selected{% endif %}>Brouillon</option>
+                    <option value="EMISE" {% if statut_selected == "EMISE" %}selected{% endif %}>Émise</option>
+                    <option value="PAYEE" {% if statut_selected == "PAYEE" %}selected{% endif %}>Payée</option>
+                    <option value="PARTIEL" {% if statut_selected == "PARTIEL" %}selected{% endif %}>Paiement partiel</option>
+                    <option value="ANNULEE" {% if statut_selected == "ANNULEE" %}selected{% endif %}>Annulée</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <input type="text" name="q" value="{{ q }}" class="form-control"
+                       placeholder="Rechercher par numéro, entreprise, description...">
+            </div>
+
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-outline-primary">Filtrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Numéro</th>
+                        <th>Entreprise</th>
+                        <th>Type</th>
+                        <th>Statut</th>
+                        <th>Émission</th>
+                        <th>Échéance</th>
+                        <th>Montant TTC</th>
+                        <th>Devise</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for facture in factures %}
+                    <tr>
+                        <td><strong>{{ facture.numero }}</strong></td>
+                        <td>{{ facture.entreprise.nom }}</td>
+                        <td>{{ facture.get_type_facture_display }}</td>
+                        <td>{{ facture.get_statut_display }}</td>
+                        <td>{{ facture.date_emission|date:"d/m/Y" }}</td>
+                        <td>{{ facture.date_echeance|date:"d/m/Y"|default:"-" }}</td>
+                        <td>{{ facture.montant_ttc }}</td>
+                        <td>{{ facture.devise }}</td>
+                        <td class="text-center">
+                            <a href="{% url 'admin_modifier_facture' facture.pk %}" class="btn btn-sm btn-primary">
+                                Modifier
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">
+                            Aucune facture trouvée.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

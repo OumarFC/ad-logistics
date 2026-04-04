@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Étiquette colis {{ obj.reference }}</title>
+
+<style>
+@page {
+  size: 100mm 180mm;
+  margin: 0;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #f3f3f3;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10px 0 20px;
+  box-sizing: border-box;
+}
+
+.label {
+  width: 100mm;
+  height: 180mm;
+  background: #fff;
+  border: 1px solid #111;
+  padding: 4mm;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  text-align: center;
+  border-bottom: 1.5px solid #111;
+  padding-bottom: 2mm;
+  margin-bottom: 2.5mm;
+  flex: 0 0 auto;
+}
+
+.company {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.subtitle {
+  font-size: 10px;
+  margin-top: 1mm;
+}
+
+.reference {
+  text-align: center;
+  border: 1.5px solid #111;
+  padding: 3mm 2mm;
+  margin-bottom: 2.5mm;
+  flex: 0 0 auto;
+}
+
+.reference .title {
+  font-size: 11px;
+}
+
+.reference .value {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin-top: 1mm;
+}
+
+.block {
+  margin-bottom: 2mm;
+  flex: 0 0 auto;
+}
+
+.block-title {
+  font-weight: 800;
+  font-size: 11px;
+  border-bottom: 1px solid #111;
+  margin-bottom: 1.2mm;
+  padding-bottom: 0.6mm;
+}
+
+.line {
+  font-size: 11px;
+  margin: 0.7mm 0;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.dest {
+  border: 1.5px solid #111;
+  padding: 2.5mm;
+  background: #f7f7f7;
+}
+
+.dest-name {
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 1mm;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2mm;
+  margin-bottom: 2mm;
+  flex: 0 0 auto;
+}
+
+.box {
+  border: 1.5px solid #111;
+  text-align: center;
+  padding: 1.8mm 1mm;
+  min-height: 15mm;
+  box-sizing: border-box;
+}
+
+.box-title {
+  font-size: 10px;
+}
+
+.box-value {
+  font-size: 14px;
+  font-weight: 900;
+  margin-top: 1mm;
+  line-height: 1.1;
+}
+
+.description-block {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin-bottom: 2mm;
+}
+
+.desc {
+  border: 1.5px solid #111;
+  padding: 2.5mm;
+  font-size: 10px;
+  line-height: 1.25;
+  flex: 1 1 auto;
+  min-height: 14mm;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.barcode {
+  text-align: center;
+  margin-top: 2mm;
+  flex: 0 0 auto;
+}
+
+.barcode img {
+  width: 78mm;
+  height: 16mm;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+.barcode-text {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  margin-top: 1mm;
+}
+
+.footer {
+  text-align: center;
+  font-size: 8px;
+  margin-top: 1.5mm;
+  flex: 0 0 auto;
+}
+
+.print {
+  margin: 10px auto;
+  display: block;
+  padding: 10px 16px;
+  background: #0d6efd;
+  color: white;
+  border: none;
+  font-size: 15px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+@media print {
+  html, body {
+    background: #fff;
+  }
+
+  .page {
+    min-height: auto;
+    padding: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .print {
+    display: none;
+  }
+
+  .label {
+    border: none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<button class="print" onclick="window.print()">🖨 Imprimer</button>
+
+<div class="page">
+  <div class="label">
+
+    <div class="header">
+      <div class="company">AD LOGISTICS</div>
+      <div class="subtitle">Fret aérien & maritime</div>
+	  <div class="subtitle">Étiquette de suivi colis</div>
+    </div>
+
+    <div class="reference">
+      <div class="title">RÉFÉRENCE COLIS</div>
+      <div class="value">{{ obj.reference }}</div>
+    </div>
+
+    <div class="block">
+      <div class="block-title">Expéditeur</div>
+      <div class="line"><b>Nom :</b> {{ obj.expediteur_nom }}</div>
+      <div class="line"><b>Tél :</b> {{ obj.expediteur_tel }}</div>
+    </div>
+
+    <div class="block">
+      <div class="block-title">Destinataire</div>
+      <div class="dest">
+        <div class="dest-name">{{ obj.destinataire_nom }}</div>
+        <div class="line"><b>Tél :</b> {{ obj.destinataire_tel }}</div>
+      </div>
+    </div>
+	
+	<div class="block">
+		<div class="block-title">Suivi</div>
+		<div class="line"><b>Agent :</b> {{ obj.agent_nom|default:"-" }}</div>
+		<div class="line"><b>Colis reçus :</b> {{ obj.progression_colis }}</div>
+	</div>
+
+    <div class="grid">
+      <div class="box">
+        <div class="box-title">TYPE</div>
+        <div class="box-value">
+          {% if obj.type_fret == "AERIEN" %}
+            AÉRIEN
+          {% else %}
+            MARITIME
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="box">
+        <div class="box-title">POIDS</div>
+        <div class="box-value">{{ obj.poids_kg }} KG</div>
+      </div>
+
+      <div class="box">
+        <div class="box-title">PRIX</div>
+        <div class="box-value">{{ obj.prix_fret_euros }} €</div>
+      </div>
+
+      <div class="box">
+        <div class="box-title">RESTANT</div>
+        <div class="box-value">{{ obj.restant_euros }} €</div>
+      </div>
+    </div>
+
+    <div class="description-block">
+      <div class="block-title">Description</div>
+      <div class="desc">
+        {{ obj.description }}
+      </div>
+    </div>
+
+    {% if barcode_base64 %}
+    <div class="barcode">
+      <img src="data:image/png;base64,{{ barcode_base64 }}" alt="Code-barres">
+      <div class="barcode-text">{{ obj.reference }}</div>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+      AD Logistics & Services — Paris — France
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

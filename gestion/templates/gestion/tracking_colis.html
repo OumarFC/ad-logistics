@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Suivi colis {{ obj.reference }} | AD Logistics</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #0f172a;
+      --accent: #1d4ed8;
+      --ok-bg: #dcfce7;
+      --ok-text: #166534;
+      --att-bg: #fef3c7;
+      --att-text: #92400e;
+      --livr-bg: #dbeafe;
+      --livr-text: #1d4ed8;
+      --shadow: 0 10px 30px rgba(15, 23, 42, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0f172a, #1d4ed8);
+      color: #fff;
+      border-radius: 18px;
+      padding: 28px 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-top {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .logo-box {
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: .5px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 6px 0 0;
+      opacity: .95;
+      font-size: 14px;
+    }
+
+    .ref-panel {
+      margin-top: 20px;
+      background: #fff;
+      color: var(--text);
+      border-radius: 16px;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .ref-label {
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      letter-spacing: .4px;
+    }
+
+    .ref-value {
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .piece-box {
+      text-align: right;
+    }
+
+    .piece-box .label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .piece-box .value {
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h3 {
+      margin: 0 0 14px;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: #374151;
+    }
+
+    .line {
+      margin: 8px 0;
+      line-height: 1.45;
+      font-size: 15px;
+    }
+
+    .line strong {
+      color: #111827;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .badge.ok {
+      background: var(--ok-bg);
+      color: var(--ok-text);
+    }
+
+    .badge.att {
+      background: var(--att-bg);
+      color: var(--att-text);
+    }
+
+    .badge.livr {
+      background: var(--livr-bg);
+      color: var(--livr-text);
+    }
+
+    .message {
+      margin-top: 8px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .progress-wrap {
+      margin-top: 16px;
+    }
+
+    .progress-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #374151;
+      font-weight: 700;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #2563eb, #0ea5e9);
+      width: {{ progress_percent }}%;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .kpi {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .kpi .label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .kpi .value {
+      font-size: 20px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .timeline {
+      margin-top: 10px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .step {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      flex: 0 0 14px;
+      margin-top: 4px;
+      background: #cbd5e1;
+    }
+
+    .dot.done {
+      background: #2563eb;
+    }
+
+    .step .text {
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 28px;
+    }
+
+    @media (max-width: 760px) {
+      .ref-panel,
+      .grid,
+      .kpis {
+        grid-template-columns: 1fr;
+      }
+
+      .piece-box {
+        text-align: left;
+      }
+
+      .ref-value {
+        font-size: 28px;
+      }
+
+      .hero h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="hero-top">
+        <div class="logo-box">ADL</div>
+        <div>
+          <h1>AD Logistics & Services</h1>
+          <p>Suivi public de colis</p>
+        </div>
+      </div>
+
+      <div class="ref-panel">
+        <div>
+          <div class="ref-label">Référence colis</div>
+          <div class="ref-value">{{ obj.reference }}</div>
+        </div>
+
+        <div class="piece-box">
+          <div class="label">Pièce</div>
+          <div class="value">
+            {% if piece %}
+              {{ piece }}
+            {% else %}
+              1/{{ total }}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Suivi du colis</h3>
+
+        <span class="badge {{ status_class }}">{{ obj.get_statut_display }}</span>
+
+        <div class="message">
+          {{ status_message }}
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress-head">
+            <span>Progression</span>
+            <span>{{ progress_percent }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="timeline">
+          <div class="step">
+            <div class="dot done"></div>
+            <div class="text"><strong>Enregistrement :</strong> colis créé le {{ obj.date_enregistrement }}</div>
+          </div>
+
+          <div class="step">
+            <div class="dot {% if obj.statut == 'OK' or obj.statut == 'LIVR' %}done{% endif %}"></div>
+            <div class="text"><strong>Traitement :</strong> prise en charge logistique par AD Logistics</div>
+          </div>
+
+          <div class="step">
+            <div class="dot {% if obj.statut == 'LIVR' %}done{% endif %}"></div>
+            <div class="text"><strong>Finalisation :</strong> disponible ou livré au destinataire</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Destinataire</h3>
+        <div class="line"><strong>Nom :</strong> {{ obj.destinataire_nom }}</div>
+        <div class="line"><strong>Téléphone :</strong> {{ obj.destinataire_tel|default:"-" }}</div>
+        <div class="line"><strong>Agence destination :</strong> {{ obj.agence_destination|default:"-" }}</div>
+        <div class="line"><strong>Agent :</strong> {{ obj.agent_nom|default:"-" }}</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <h3>Détails du colis</h3>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="label">Type fret</div>
+          <div class="value">{{ obj.get_type_fret_display }}</div>
+        </div>
+
+        <div class="kpi">
+          <div class="label">Poids</div>
+          <div class="value">{{ obj.poids_kg }} kg</div>
+        </div>
+
+        <div class="kpi">
+          <div class="label">Prix fret</div>
+          <div class="value">{{ obj.prix_fret_euros }} €</div>
+        </div>
+
+        <div class="kpi">
+          <div class="label">Total colis</div>
+          <div class="value">{{ total }}</div>
+        </div>
+      </div>
+
+      <div class="line" style="margin-top:18px;"><strong>Expéditeur :</strong> {{ obj.expediteur_nom }}</div>
+      <div class="line"><strong>Téléphone expéditeur :</strong> {{ obj.expediteur_tel|default:"-" }}</div>
+      <div class="line"><strong>Description :</strong> {{ obj.description|default:"-" }}</div>
+      <div class="line"><strong>Référence interne :</strong> {{ obj.reference }}</div>
+    </div>
+
+    <div class="footer">
+      AD Logistics & Services — Plateforme de suivi colis
+    </div>
+
+  </div>
+</body>
+</html>

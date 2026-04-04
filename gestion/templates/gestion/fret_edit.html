@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Modifier fret {{ obj.reference }} | AD Logistics{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'gestion/fret_edit.css' %}">
+
+<section class="section">
+  <div class="container">
+    <div class="edit-page">
+
+      <div class="edit-head">
+        <div>
+          <h1>Modifier le fret</h1>
+          <p class="muted">
+            Référence : <strong>{{ obj.reference }}</strong>
+          </p>
+        </div>
+
+        <div class="edit-head-actions">
+          <a href="{% url 'dashboard' %}#recu" class="btn ghost">Retour</a>
+          <a href="{% url 'fret_print' obj.id %}" class="btn" target="_blank">Imprimer</a>
+        </div>
+      </div>
+
+      {% if messages %}
+        <div class="messages-wrap">
+          {% for message in messages %}
+            <div class="msg {{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if form.errors %}
+        <div class="form-errors">
+          <strong>Veuillez corriger les erreurs ci-dessous.</strong>
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+	  
+	  {% if sms_auto_send_enabled %}
+		  <div style="margin-bottom:16px;padding:12px 14px;border-radius:10px;border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;">
+			<strong>Envoi SMS automatique activé</strong><br>
+			Un SMS sera envoyé au client si le statut du fret change.
+		  </div>
+		{% else %}
+		  <div style="margin-bottom:16px;padding:12px 14px;border-radius:10px;border:1px solid #fde68a;background:#fffbeb;color:#92400e;">
+			<strong>Envoi SMS automatique désactivé</strong><br>
+			Les changements de statut sont enregistrés sans envoyer de SMS au client.
+		  </div>
+	 {% endif %}
+
+      <form method="post" class="edit-card">
+        {% csrf_token %}
+
+        <div class="edit-grid">
+
+          <div class="form-section span-3">
+            <h3>Informations générales</h3>
+          </div>
+
+          <label>
+            Référence
+            <input type="text" value="{{ obj.reference }}" disabled>
+          </label>
+
+          <label>
+            Statut
+            {{ form.statut }}
+            {{ form.statut.errors }}
+          </label>
+
+          <label class="check-field edit-check">
+            <span>Livraison ?</span>
+            <div class="check-wrap">{{ form.livraison }}</div>
+            {{ form.livraison.errors }}
+          </label>
+
+          <label>
+            Type de fret
+            {{ form.type_fret }}
+            {{ form.type_fret.errors }}
+          </label>
+
+          <label>
+            Date enr.
+            {{ form.date_enregistrement }}
+            {{ form.date_enregistrement.errors }}
+          </label>
+
+          <label>
+            Nom de l’agent
+            {{ form.agent_nom }}
+            {{ form.agent_nom.errors }}
+          </label>
+
+          <div class="form-section span-3">
+            <h3>Expéditeur / Destinataire</h3>
+          </div>
+
+          <label>
+            Expéditeur
+            {{ form.expediteur_nom }}
+            {{ form.expediteur_nom.errors }}
+          </label>
+
+          <label>
+            Tél. expéditeur
+            {{ form.expediteur_tel }}
+            {{ form.expediteur_tel.errors }}
+          </label>
+
+          <label>
+            Adresse expéditeur
+            {{ form.expediteur_adresse }}
+            {{ form.expediteur_adresse.errors }}
+          </label>
+
+          <label>
+            Destinataire
+            {{ form.destinataire_nom }}
+            {{ form.destinataire_nom.errors }}
+          </label>
+
+          <label>
+            Tél. destinataire
+            {{ form.destinataire_tel }}
+            {{ form.destinataire_tel.errors }}
+          </label>
+
+          <label>
+            Agence destination
+            {{ form.agence_destination }}
+            {{ form.agence_destination.errors }}
+          </label>
+
+          <div class="form-section span-3">
+            <h3>Informations logistiques</h3>
+          </div>
+
+          <label>
+            Poids (kg)
+            {{ form.poids_kg }}
+            {{ form.poids_kg.errors }}
+          </label>
+
+          <label>
+            Prix fret (€)
+            {{ form.prix_fret_euros }}
+            {{ form.prix_fret_euros.errors }}
+          </label>
+
+          <label>
+            Restant (€)
+            {{ form.restant_euros }}
+            {{ form.restant_euros.errors }}
+          </label>
+
+          <label>
+            Nombre total de colis
+            {{ form.nb_colis_total }}
+            {{ form.nb_colis_total.errors }}
+          </label>
+
+          <label class="span-3">
+            Type colis
+            {{ form.type_colis }}
+            {{ form.type_colis.errors }}
+          </label>
+
+          <label class="span-3">
+            Description
+            {{ form.description }}
+            {{ form.description.errors }}
+          </label>
+
+          <div class="form-section span-3">
+            <h3>Aperçu du fret</h3>
+          </div>
+
+          <div class="preview-grid span-3">
+            <div class="preview-card">
+              <div class="preview-label">Poids</div>
+              <div id="preview_fret_poids" class="preview-value">0.00</div>
+              <div class="preview-sub">kg</div>
+            </div>
+
+            <div class="preview-card">
+              <div class="preview-label">Prix fret</div>
+              <div id="preview_fret_prix" class="preview-value">0.00</div>
+              <div class="preview-sub">EUR</div>
+            </div>
+
+            <div class="preview-card">
+              <div class="preview-label">Restant</div>
+              <div id="preview_fret_restant" class="preview-value">0.00</div>
+              <div class="preview-sub">EUR</div>
+            </div>
+
+            <div class="preview-card">
+              <div class="preview-label">Nombre colis</div>
+              <div id="preview_fret_nb" class="preview-value">1</div>
+              <div class="preview-sub">Total</div>
+            </div>
+          </div>
+
+          <div class="preview-grid span-3 preview-grid-3">
+            <div class="preview-card">
+              <div class="preview-label">Type fret</div>
+              <div id="preview_fret_type_fret" class="preview-inline">-</div>
+            </div>
+
+            <div class="preview-card">
+              <div class="preview-label">Agence destination</div>
+              <div id="preview_fret_agence" class="preview-inline">-</div>
+            </div>
+
+            <div class="preview-card">
+              <div class="preview-label">Livraison</div>
+              <div id="preview_fret_livraison" class="preview-inline">Non</div>
+            </div>
+          </div>
+
+          <div class="form-actions span-3">
+            <button class="btn" type="submit">Enregistrer les modifications</button>
+            <a class="btn ghost" href="{% url 'dashboard' %}#recu">Annuler</a>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const poidsInput = document.getElementById('id_poids_kg');
+  const prixInput = document.getElementById('id_prix_fret_euros');
+  const restantInput = document.getElementById('id_restant_euros');
+  const nbInput = document.getElementById('id_nb_colis_total');
+  const typeFretInput = document.getElementById('id_type_fret');
+  const agenceInput = document.getElementById('id_agence_destination');
+  const livraisonInput = document.getElementById('id_livraison');
+
+  const previewPoids = document.getElementById('preview_fret_poids');
+  const previewPrix = document.getElementById('preview_fret_prix');
+  const previewRestant = document.getElementById('preview_fret_restant');
+  const previewNb = document.getElementById('preview_fret_nb');
+  const previewTypeFret = document.getElementById('preview_fret_type_fret');
+  const previewAgence = document.getElementById('preview_fret_agence');
+  const previewLivraison = document.getElementById('preview_fret_livraison');
+
+  function toNumber(value) {
+    if (!value) return 0;
+    value = String(value).replace(',', '.');
+    const n = parseFloat(value);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function formatNumber(value) {
+    return new Intl.NumberFormat('fr-FR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(value);
+  }
+
+  function selectedText(select) {
+    if (!select || !select.options.length) return '-';
+    return select.options[select.selectedIndex]?.text || '-';
+  }
+
+  function updateFretPreview() {
+    if (previewPoids && poidsInput) previewPoids.textContent = formatNumber(toNumber(poidsInput.value));
+    if (previewPrix && prixInput) previewPrix.textContent = formatNumber(toNumber(prixInput.value));
+    if (previewRestant && restantInput) previewRestant.textContent = formatNumber(toNumber(restantInput.value));
+    if (previewNb && nbInput) previewNb.textContent = parseInt(nbInput.value || '1', 10) || 1;
+    if (previewTypeFret && typeFretInput) previewTypeFret.textContent = selectedText(typeFretInput);
+    if (previewAgence && agenceInput) previewAgence.textContent = agenceInput.value || '-';
+    if (previewLivraison && livraisonInput) previewLivraison.textContent = livraisonInput.checked ? 'Oui' : 'Non';
+  }
+
+  [poidsInput, prixInput, restantInput, nbInput, typeFretInput, agenceInput, livraisonInput].forEach(function (el) {
+    if (!el) return;
+    el.addEventListener('input', updateFretPreview);
+    el.addEventListener('change', updateFretPreview);
+  });
+
+  updateFretPreview();
+});
+</script>
+{% endblock %}

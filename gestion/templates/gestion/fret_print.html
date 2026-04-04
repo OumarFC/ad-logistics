@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Impression Fret {{ obj.reference }}{% endblock %}
+{% block content %}
+<div class="section container">
+  <h1>Fiche Fret {{ obj.reference }}</h1>
+  <hr>
+  <p><b>Date:</b> {{ obj.date_enregistrement }}</p>
+  <p><b>Type:</b> {{ obj.get_type_fret_display }}</p>
+  <p><b>Poids:</b> {{ obj.poids_kg }} kg</p>
+  <p><b>Prix:</b> {{ obj.prix_fret_euros }} €</p>
+  <p><b>Expéditeur:</b> {{ obj.expediteur_nom }} / {{ obj.expediteur_tel }}</p>
+  <p><b>Destinataire:</b> {{ obj.destinataire_nom }} / {{ obj.destinataire_tel }}</p>
+
+  <button class="btn" onclick="window.print()">Imprimer</button>
+  <a class="btn ghost" href="/app/#recu">Retour</a>
+</div>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Envoyer des SMS{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Envoyer des SMS</h2>
+            <p class="text-muted mb-0">Sélectionne les clients ou saisis des numéros manuellement.</p>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for err in form.non_field_errors %}
+                            <div>{{ err }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">{{ form.clients.label }}</label>
+                    <div class="border rounded p-3" style="max-height: 260px; overflow-y: auto;">
+                        {{ form.clients }}
+                    </div>
+                    {% for error in form.clients.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">{{ form.numeros.label }}</label>
+                    {{ form.numeros }}
+                    {% if form.numeros.help_text %}
+                        <div class="form-text">{{ form.numeros.help_text }}</div>
+                    {% endif %}
+                    {% for error in form.numeros.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">{{ form.message.label }}</label>
+                    {{ form.message }}
+                    {% for error in form.message.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        Envoyer les SMS
+                    </button>
+                    <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                        Retour
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Historique des SMS</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if logs %}
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Numéro</th>
+                                <th>Message</th>
+                                <th>Statut</th>
+                                <th>Erreur</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logs %}
+                                <tr>
+                                    <td>{{ log.created_at|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ log.client_nom|default:"-" }}</td>
+                                    <td>{{ log.numero }}</td>
+                                    <td style="max-width: 320px;">{{ log.message|truncatechars:100 }}</td>
+                                    <td>
+                                        {% if log.statut == "success" %}
+                                            <span class="badge bg-success">Envoyé</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Erreur</span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="max-width: 300px;">
+                                        {% if log.erreur %}
+                                            <small class="text-danger">{{ log.erreur|truncatechars:120 }}</small>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="p-3">
+                    <nav>
+                        <ul class="pagination mb-0">
+                            {% if logs.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ logs.previous_page_number }}">Précédent</a>
+                                </li>
+                            {% endif %}
+
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    Page {{ logs.number }} / {{ logs.paginator.num_pages }}
+                                </span>
+                            </li>
+
+                            {% if logs.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ logs.next_page_number }}">Suivant</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            {% else %}
+                <div class="p-4 text-muted">
+                    Aucun SMS envoyé pour le moment.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

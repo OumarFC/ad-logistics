@@ -1,0 +1,433 @@
+{% load number_format %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Bilan Transfert AD Logistics</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 10mm;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #111827;
+      font-size: 11px;
+      margin: 0;
+    }
+
+    .pdf-header {
+      display: table;
+      width: 100%;
+      margin-bottom: 18px;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 12px;
+    }
+
+    .pdf-header-left,
+    .pdf-header-right {
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    .pdf-header-right {
+      text-align: right;
+    }
+
+    .logo {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 24px;
+      color: #0f172a;
+    }
+
+    .muted {
+      color: #475569;
+      font-size: 12px;
+    }
+
+    .section {
+      margin-top: 18px;
+      page-break-inside: avoid;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      padding: 9px 12px;
+      color: #fff;
+      background: #7c3aed;
+    }
+
+    .period-box {
+      border: 1px solid #d1d5db;
+      background: #f8fafc;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: #334155;
+      border-radius: 6px;
+    }
+
+    .period-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #64748b;
+      font-weight: bold;
+      margin-bottom: 6px;
+      letter-spacing: .04em;
+    }
+
+    .period-value {
+      font-size: 13px;
+      font-weight: bold;
+      color: #0f172a;
+      line-height: 1.35;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .kpis {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 14px;
+      table-layout: fixed;
+    }
+
+	.kpis td {
+	  border: 1px solid #d1d5db;
+	  padding: 8px 7px;
+	  width: 20%;
+	  vertical-align: middle;
+	  background: #fff;
+	  height: 52px;
+	}
+
+	.kpi-label {
+	  display: block;
+	  font-size: 10px;
+	  color: #64748b;
+	  text-transform: uppercase;
+	  margin: 0 0 4px 0;
+	  font-weight: bold;
+	  line-height: 1.15;
+	  word-break: break-word;
+	  overflow-wrap: anywhere;
+	}
+
+	.kpi-value {
+	  display: block;
+	  font-size: 14px;
+	  font-weight: bold;
+	  color: #0f172a;
+	  line-height: 1.1;
+	  word-break: break-word;
+	  overflow-wrap: anywhere;
+	  white-space: nowrap;
+	}
+
+    .subtotals {
+      margin-top: 14px;
+      margin-bottom: 12px;
+    }
+
+    .subtotals-box {
+      border: 1px solid #d1d5db;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      background: #fff;
+      border-radius: 6px;
+    }
+
+    .subtotals-box h4 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: #0f172a;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 8px;
+    }
+
+    .sub-line {
+      display: table;
+      width: 100%;
+      padding: 6px 0;
+      border-top: 1px solid #eef2f7;
+      color: #334155;
+      font-size: 11px;
+    }
+
+    .sub-line:first-child {
+      border-top: none;
+    }
+
+    .sub-label,
+    .sub-values {
+      display: table-cell;
+      vertical-align: top;
+    }
+
+    .sub-label {
+      width: 70px;
+      font-weight: bold;
+      color: #0f172a;
+      white-space: nowrap;
+    }
+
+    .sub-values {
+      padding-left: 10px;
+      line-height: 1.5;
+    }
+
+    .sub-pill {
+      display: inline-block;
+      margin: 2px 6px 2px 0;
+      padding: 3px 7px;
+      border: 1px solid #dbe4f0;
+      background: #f8fafc;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    table.data {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      table-layout: fixed;
+    }
+
+    table.data th,
+    table.data td {
+      border: 1px solid #d1d5db;
+      padding: 5px 6px;
+      font-size: 9.3px;
+      text-align: left;
+      vertical-align: top;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+	  line-height: 1.25;
+    }
+
+    table.data th {
+      background: #f3f4f6;
+      color: #0f172a;
+      font-weight: bold;
+      line-height: 1.2;
+    }
+
+    .footer-sign {
+      margin-top: 28px;
+      display: table;
+      width: 100%;
+    }
+
+    .footer-sign-left,
+    .footer-sign-right {
+      display: table-cell;
+      vertical-align: bottom;
+    }
+
+    .footer-sign-right {
+      text-align: right;
+    }
+
+    .sign-title {
+      margin-bottom: 40px;
+      color: #475569;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .sign-line {
+      width: 220px;
+      border-bottom: 1px solid #111827;
+      margin-bottom: 8px;
+    }
+
+    .sign-name {
+      font-size: 13px;
+      color: #0f172a;
+      font-weight: bold;
+    }
+
+    .stamp {
+      display: inline-block;
+      width: 92px;
+      height: 92px;
+      border: 3px solid #dc2626;
+      color: #dc2626;
+      border-radius: 999px;
+      text-align: center;
+      font-weight: bold;
+      line-height: 1.2;
+      padding-top: 18px;
+      transform: rotate(-10deg);
+    }
+
+    .print-meta {
+      margin-top: 20px;
+      font-size: 11px;
+      color: #64748b;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="pdf-header">
+    <div class="pdf-header-left">
+      <img src="{{ logo_url }}" alt="Logo AD Logistics" class="logo">
+    </div>
+    <div class="pdf-header-right">
+      <h1>Bilan Transfert de Colis</h1>
+      <div class="muted">
+        {% if transfert_du %}Du {{ transfert_du }}{% endif %}
+        {% if transfert_au %} au {{ transfert_au }}{% endif %}
+      </div>
+      <div class="muted">Édité le {{ print_date|date:"Y-m-d" }}</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Bilan Transfert de Colis</div>
+
+    <div class="period-box">
+      <div class="period-title">Période sélectionnée</div>
+      <div class="period-value">
+        {% if transfert_period == "jour" %}
+          Jour J
+        {% elif transfert_period == "semaine" %}
+          Semaine
+        {% elif transfert_period == "mois" %}
+          Mois
+        {% elif transfert_period == "libre" %}
+          Période libre
+        {% else %}
+          Bilan
+        {% endif %}
+        {% if transfert_du or transfert_au %}
+          — {% if transfert_du %}du {{ transfert_du }}{% endif %}{% if transfert_au %} au {{ transfert_au }}{% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    <table class="kpis">
+	  <tr>
+		<td>
+		  <div class="kpi-label">Opérations</div>
+		  <div class="kpi-value">{{ transfert_bilan.nb_operations|default:0 }}</div>
+		</td>
+		<td>
+		  <div class="kpi-label">Sommes envoyées</div>
+		  <div class="kpi-value">{{ transfert_bilan.total_envoye|short_number }}</div>
+		</td>
+		<td>
+		  <div class="kpi-label">Frais d’envoi</div>
+		  <div class="kpi-value">{{ transfert_bilan.total_frais|short_number}}</div>
+		</td>
+		<td>
+		  <div class="kpi-label">Total payé</div>
+		  <div class="kpi-value">{{ transfert_bilan.total_a_payer|short_number }}</div>
+		</td>
+		<td>
+		  <div class="kpi-label">Sommes reçues</div>
+		  <div class="kpi-value">{{ transfert_bilan.total_a_recevoir|short_number }}</div>
+		</td>
+	  </tr>
+	</table>
+    <div class="subtotals">
+      <div class="subtotals-box">
+        <h4>Sous-totaux envoi</h4>
+        {% for row in transfert_sous_totaux.envoi %}
+          <div class="sub-line">
+            <div class="sub-label">{{ row.devise_envoi }}</div>
+            <div class="sub-values">
+			<span class="sub-pill">Envoyé : {{ row.total_envoye|short_number }}</span>
+			<span class="sub-pill">Frais : {{ row.total_frais|short_number}}</span>
+			<span class="sub-pill">Total payé : {{ row.total_a_payer|short_number }}</span>
+             <span class="sub-pill">Ops : {{ row.nb_operations }}</span>
+            </div>
+          </div>
+        {% empty %}
+          <div class="sub-line">
+            <div class="sub-values">Aucune donnée.</div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="subtotals-box">
+        <h4>Sous-totaux réception</h4>
+        {% for row in transfert_sous_totaux.reception %}
+          <div class="sub-line">
+            <div class="sub-label">{{ row.devise_reception }}</div>
+            <div class="sub-values">
+             <span class="sub-pill">Reçu : {{ row.total_a_recevoir|short_number }}</span>
+              <span class="sub-pill">Ops : {{ row.nb_operations }}</span>
+            </div>
+          </div>
+        {% empty %}
+          <div class="sub-line">
+            <div class="sub-values">Aucune donnée.</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Réf</th>
+          <th>Date</th>
+          <th>Expéditeur</th>
+          <th>Destinataire</th>
+          <th>Montant envoyé</th>
+          <th>Frais</th>
+          <th>Total payé</th>
+          <th>Taux</th>
+          <th>Montant reçu</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in transfert_bilan_list %}
+        <tr>
+          <td>{{ t.reference }}</td>
+    <td>{{ t.date_transfert|date:"d/m/Y" }}</td>
+          <td>{{ t.expediteur_nom }}</td>
+          <td>{{ t.destinataire_nom }}</td>
+			<td>{{ t.montant_envoye|short_number }} {{ t.devise_envoi }}</td>
+			<td>{{ t.frais_transfert|short_number }} {{ t.devise_envoi }}</td>
+			<td>{{ t.montant_total_payer|short_number }} {{ t.devise_envoi }}</td>
+			<td>{{ t.taux_transfert|short_number}}</td>
+			<td>{{ t.montant_reception|short_number }} {{ t.devise_reception }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9">Aucune donnée sur cette période.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer-sign">
+    <div class="footer-sign-left">
+      <div class="sign-title">Signature</div>
+      <div class="sign-line"></div>
+      <div class="sign-name">{{ signature_nom }} — {{ signature_role }}</div>
+    </div>
+    <div class="footer-sign-right">
+      <div class="stamp">ADL<br>VALIDÉ</div>
+    </div>
+  </div>
+
+  <div class="print-meta">
+    Document généré automatiquement par AD Logistics &amp; Services
+  </div>
+</body>
+</html>

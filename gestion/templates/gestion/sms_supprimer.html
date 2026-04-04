@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Supprimer SMS{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <h3 class="mb-3">Supprimer cet historique SMS</h3>
+
+      <p><strong>Numéro :</strong> {{ sms.numero }}</p>
+      <p><strong>Message :</strong> {{ sms.message|truncatechars:120 }}</p>
+      <p><strong>Date :</strong> {{ sms.created_at|date:"d/m/Y H:i" }}</p>
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+          <a href="/app/#sms" class="btn btn-outline-secondary">Annuler</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

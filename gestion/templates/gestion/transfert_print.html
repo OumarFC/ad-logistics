@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Fiche transfert {{ obj.reference }}</title>
+<style>
+@page {
+  size: A4;
+  margin: 15mm;
+}
+body {
+  font-family: Arial, sans-serif;
+  color: #111;
+}
+.sheet {
+  max-width: 800px;
+  margin: 0 auto;
+  border: 2px solid #111;
+  padding: 20px;
+}
+.header {
+  text-align: center;
+  border-bottom: 2px solid #111;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+.company {
+  font-size: 28px;
+  font-weight: 900;
+}
+.subtitle {
+  font-size: 14px;
+}
+.ref {
+  text-align: center;
+  border: 2px solid #111;
+  padding: 12px;
+  margin-bottom: 20px;
+}
+.ref .value {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+.block {
+  margin-bottom: 18px;
+}
+.block-title {
+  font-weight: 800;
+  border-bottom: 1px solid #111;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+}
+.line {
+  margin: 6px 0;
+  font-size: 15px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.box {
+  border: 1px solid #111;
+  padding: 12px;
+}
+.box-title {
+  font-size: 13px;
+  color: #444;
+}
+.box-value {
+  margin-top: 6px;
+  font-size: 22px;
+  font-weight: 800;
+}
+.print-btn {
+  padding: 10px 18px;
+  background: #0d6efd;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 15px;
+}
+@media print {
+  .print-btn { display: none; }
+}
+</style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">🖨 Imprimer la fiche</button>
+
+<div class="sheet">
+  <div class="header">
+    <div class="company">AD LOGISTICS & SERVICES</div>
+    <div class="subtitle">Fiche de transfert d’argent</div>
+  </div>
+
+  <div class="ref">
+    <div>Référence</div>
+    <div class="value">{{ obj.reference }}</div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">Informations générales</div>
+    <div class="line"><strong>Agent :</strong> {{ obj.agent_nom|default:"-" }}</div>
+    <div class="line"><strong>Statut :</strong> {{ obj.get_statut_display }}</div>
+    <div class="line"><strong>Date :</strong> {{ obj.date_transfert }}</div>
+  </div>
+
+  <div class="grid">
+    <div class="box">
+      <div class="block-title">Expéditeur</div>
+      <div class="line"><strong>Nom :</strong> {{ obj.expediteur_nom }}</div>
+      <div class="line"><strong>Téléphone :</strong> {{ obj.expediteur_tel }}</div>
+    </div>
+
+    <div class="box">
+      <div class="block-title">Destinataire</div>
+      <div class="line"><strong>Nom :</strong> {{ obj.destinataire_nom }}</div>
+      <div class="line"><strong>Téléphone :</strong> {{ obj.destinataire_tel }}</div>
+    </div>
+  </div>
+
+  <div class="block" style="margin-top:20px;">
+    <div class="block-title">Détails du transfert</div>
+    <div class="grid">
+      <div class="box">
+        <div class="box-title">Somme envoyée</div>
+        <div class="box-value">{{ obj.montant_envoye }} {{ obj.devise_envoi }}</div>
+      </div>
+
+      <div class="box">
+        <div class="box-title">Taux de transfert</div>
+        <div class="box-value">{{ obj.taux_transfert }}</div>
+      </div>
+
+      <div class="box">
+        <div class="box-title">Somme à recevoir</div>
+        <div class="box-value">{{ obj.montant_reception }} {{ obj.devise_reception }}</div>
+      </div>
+
+      <div class="box">
+        <div class="box-title">Devise réception</div>
+        <div class="box-value">{{ obj.devise_reception }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">Description</div>
+    <div class="line">{{ obj.description|default:"-" }}</div>
+  </div>
+
+  <div class="block" style="margin-top:30px;">
+    <div class="grid">
+      <div class="box" style="height:80px;">
+        Signature expéditeur
+      </div>
+      <div class="box" style="height:80px;">
+        Signature agent
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

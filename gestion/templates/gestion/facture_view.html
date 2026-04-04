@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ obj.type_piece }} — {{ obj.ref_colis }}{% endblock %}
+{% block content %}
+<div class="container section">
+  <h2>{{ obj.type_piece }} — {{ obj.ref_colis }}</h2>
+  <p><strong>Date :</strong> {{ obj.date_colis }}</p>
+  <p><strong>Expéditeur :</strong> {{ obj.exp_nom }} ({{ obj.exp_tel }})</p>
+  <p><strong>Destinataire :</strong> {{ obj.des_nom }} ({{ obj.des_tel }})</p>
+  <p><strong>Montant :</strong> {{ obj.montant }} {{ obj.devise }} — <strong>Qui paye :</strong> {{ obj.get_qui_paye_display }}</p>
+  <p><strong>Description :</strong> {{ obj.description }}</p>
+
+  <div class="form-actions">
+    <a class="btn" target="_blank" href="{% url 'facture_print' pk=obj.id %}">Imprimer</a>
+    {% if obj.type_piece == "DEVIS" %}
+      <a class="btn" href="{% url 'devis_convert' pk=obj.id %}">Convertir en facture</a>
+    {% endif %}
+    <a class="btn ghost" href="/app/#{{ obj.type_piece|lower }}">Retour</a>
+  </div>
+</div>
+{% endblock %}
