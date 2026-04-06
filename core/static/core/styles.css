@@ -27,7 +27,13 @@ body{
 
 /* Top bar */
 .topbar{background:var(--blue-dark); color:var(--text-inv); font-size:14px}
-.topbar .container{display:flex; gap:18px; padding:6px 0; flex-wrap:wrap; justify-content:flex-end}
+.topbar-inner{
+  display:flex;
+  gap:18px;
+  padding:6px 0;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
 
 /* Header / Nav */
 .header{background:var(--blue); color:var(--text-inv); box-shadow:var(--shadow)}
@@ -258,4 +264,458 @@ body{
 .nav-logout-btn:hover{
   color:#fff;
   opacity:1;
+}
+
+.topbar-fixed{
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items:center;
+  gap:18px;
+  padding:6px 0;
+}
+
+.topbar-fixed .topbar-item{
+  color:var(--text-inv);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.topbar-fixed .topbar-item:nth-child(1){
+  text-align:left;
+}
+
+.topbar-fixed .topbar-item:nth-child(2){
+  text-align:center;
+}
+
+.topbar-fixed .topbar-item:nth-child(3){
+  text-align:right;
+}
+
+@media (max-width: 900px){
+  .topbar-fixed{
+    grid-template-columns:1fr;
+    gap:4px;
+  }
+
+  .topbar-fixed .topbar-item:nth-child(1),
+  .topbar-fixed .topbar-item:nth-child(2),
+  .topbar-fixed .topbar-item:nth-child(3){
+    text-align:center;
+  }
+}
+
+/* ===== TOPBAR COMPACT ===== */
+
+.topbar{
+  background: var(--blue-dark);
+  font-size: 13px;
+}
+
+.topbar-fixed{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px; /* 🔥 réduit l'espace */
+  padding:4px 0; /* 🔥 plus compact */
+}
+
+.topbar-item{
+  color: var(--text-inv);
+  white-space: nowrap;
+  opacity: 0.95;
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .topbar-fixed{
+    flex-wrap: wrap;
+    justify-content:center;
+    gap:6px;
+  }
+}
+
+/* ===== NAVBAR PRO ===== */
+
+.nav-fixed{
+  display:grid;
+  grid-template-columns: auto 1fr auto;
+  align-items:center;
+  gap:20px;
+}
+
+/* LOGO */
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+}
+
+.logo{
+  width:42px;
+  height:42px;
+  object-fit:contain;
+}
+
+.brand-text strong{
+  display:block;
+  color:#fff;
+  font-size:15px;
+}
+
+.brand-text small{
+  color:#cbd5e1;
+  font-size:12px;
+}
+
+/* MENU CENTRE */
+.menu-center{
+  display:flex;
+  justify-content:center;
+  gap:28px;
+}
+
+.menu-center a{
+  color:#e2e8f0;
+  text-decoration:none;
+  font-weight:500;
+  font-size:15px;
+}
+
+.menu-center a:hover{
+  color:#fff;
+}
+
+/* DROITE */
+.nav-right{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+}
+
+.nav-logout-btn{
+  background:transparent;
+  border:none;
+  color:#e2e8f0;
+  font-weight:500;
+  cursor:pointer;
+}
+
+.nav-logout-btn:hover{
+  color:#fff;
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .nav-fixed{
+    grid-template-columns: 1fr;
+    gap:10px;
+    text-align:center;
+  }
+
+  .menu-center{
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+
+  .nav-right{
+    justify-content:center;
+  }
+}
+
+/* =========================
+   HEADER FIXE ET STABLE
+========================= */
+
+.header{
+  background: var(--blue);
+  color: var(--text-inv);
+  box-shadow: var(--shadow);
+}
+
+.header-fixed{
+  display: grid;
+  grid-template-columns: 320px 1fr 220px;
+  align-items: center;
+  min-height: 96px;
+  gap: 12px;
+}
+
+/* zone gauche */
+.header-fixed__left{
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.brand-fixed{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: #fff;
+  min-width: 0;
+}
+
+.logo{
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 56px;
+}
+
+.brand-text{
+  min-width: 0;
+}
+
+.brand-text strong{
+  display: block;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.15;
+  font-weight: 800;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand-text small{
+  display: block;
+  color: #e6f0fb;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 700;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* zone centre */
+.header-fixed__center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-fixed{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 34px;
+  flex-wrap: nowrap;
+}
+
+.menu-fixed a{
+  color: #eef6ff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.menu-fixed a:hover{
+  color: #fff;
+}
+
+/* zone droite */
+.header-fixed__right{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.logout-form-fixed{
+  margin: 0;
+}
+
+.nav-logout-btn,
+.nav-login-fixed{
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: #eef6ff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.nav-logout-btn:hover,
+.nav-login-fixed:hover{
+  color: #fff;
+}
+
+/* neutraliser anciens styles qui peuvent bouger */
+.nav,
+.menu,
+.logout-form{
+  all: unset;
+}
+
+/* responsive */
+@media (max-width: 1100px){
+  .header-fixed{
+    grid-template-columns: 280px 1fr 190px;
+  }
+
+  .menu-fixed{
+    gap: 20px;
+  }
+}
+
+@media (max-width: 900px){
+  .header-fixed{
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 14px 0;
+  }
+
+  .header-fixed__left,
+  .header-fixed__center,
+  .header-fixed__right{
+    justify-content: center;
+  }
+
+  .brand-fixed{
+    justify-content: center;
+  }
+
+  .menu-fixed{
+    flex-wrap: wrap;
+    gap: 12px 18px;
+  }
+}
+
+.header-fixed{
+  grid-template-columns: 340px 1fr 240px;
+}
+
+/* =========================
+   VERROUILLAGE HEADER GLOBAL
+   contre Bootstrap / styles locaux
+========================= */
+
+.topbar,
+.header{
+  width: 100%;
+}
+
+.topbar .container,
+.header .container{
+  width: min(1120px, 92%) !important;
+  max-width: 1120px !important;
+  margin: 0 auto !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.header-fixed{
+  display: grid !important;
+  grid-template-columns: 320px 1fr 220px !important;
+  align-items: center !important;
+  min-height: 96px !important;
+  gap: 12px !important;
+}
+
+.header-fixed__left{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  min-width: 0 !important;
+}
+
+.header-fixed__center{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 0 !important;
+}
+
+.header-fixed__right{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  min-width: 0 !important;
+}
+
+.brand-fixed{
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  text-decoration: none !important;
+  color: #fff !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+.menu-fixed{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 34px !important;
+  flex-wrap: nowrap !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.menu-fixed a{
+  display: inline-flex !important;
+  align-items: center !important;
+  color: #eef6ff !important;
+  text-decoration: none !important;
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.logout-form-fixed{
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.logout-form-fixed button,
+.nav-login-fixed{
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: transparent !important;
+  border: none !important;
+  color: #eef6ff !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 900px){
+  .header-fixed{
+    grid-template-columns: 1fr !important;
+  }
+
+  .header-fixed__left,
+  .header-fixed__center,
+  .header-fixed__right{
+    justify-content: center !important;
+  }
+
+  .menu-fixed{
+    flex-wrap: wrap !important;
+    gap: 12px 18px !important;
+  }
 }

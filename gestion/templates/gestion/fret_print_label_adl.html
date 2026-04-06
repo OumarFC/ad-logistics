@@ -6,22 +6,30 @@
 
 <style>
   @page {
-    size: 300mm 160mm;
+    size: 100mm 150mm;
     margin: 0;
   }
 
+  * {
+    box-sizing: border-box;
+  }
+
   html, body {
+    width: 100mm;
+    height: 150mm;
     margin: 0;
     padding: 0;
     background: #ececec;
     font-family: Arial, Helvetica, sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .print-btn {
     display: block;
-    margin: 14px auto;
+    margin: 10px auto;
     padding: 10px 18px;
-    font-size: 15px;
+    font-size: 14px;
     background: #0d6efd;
     border: none;
     border-radius: 6px;
@@ -30,148 +38,168 @@
   }
 
   .sheet {
-    width: 300mm;
-    margin: 14px auto 30px;
+    width: 100mm;
+    margin: 0 auto 16px;
   }
 
   .ticket {
-    width: 300mm;
-    height: 160mm;
-    background: #fff;
-    border: 1px solid #111;
+    width: 100mm;
+    height: 150mm;
+    background: #f7f7f7;
+    border: 1px solid #666;
     box-sizing: border-box;
-    position: relative;
     overflow: hidden;
+    position: relative;
     page-break-after: always;
-    margin-bottom: 18px;
+    break-after: page;
+    display: grid;
+    grid-template-rows: auto 1fr;
   }
 
   .ticket:last-child {
     page-break-after: auto;
+    break-after: auto;
   }
 
-  /* Bandeau noir */
   .top-strip {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 300mm;
-    height: 12mm;
-    background: #222;
+    background: #1f1f1f;
     color: #fff;
+    text-align: center;
+    font-size: 4.2mm;
+    font-weight: 700;
+    letter-spacing: 1.2mm;
+    padding: 2.5mm 2mm;
+    text-transform: uppercase;
+    white-space: nowrap;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+	.content {
+	  padding: 3mm;
+	  display: grid;
+	  grid-template-rows: auto auto 1fr;
+	  row-gap: 1.8mm;
+	  height: 100%;
+	}
+
+  .header-grid {
+    display: grid;
+    grid-template-columns: 22mm 1fr 22mm;
+    gap: 2mm;
+    align-items: center;
+  }
+
+  .brand-logo {
+    width: 22mm;
+    height: 22mm;
+    border: 1px solid #666;
+    background: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    letter-spacing: 4.2mm;
-    font-size: 6.2mm;
-    font-weight: 400;
-    text-transform: uppercase;
-    white-space: nowrap;
+    overflow: hidden;
   }
 
-  /* Bloc haut gauche */
-  .brand-logo {
-    position: absolute;
-    top: 29mm;
-    left: 28mm;
-    width: 42mm;
-    text-align: center;
-    font-family: Georgia, serif;
-    font-size: 15mm;
+  .brand-logo img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .brand-logo .fallback {
+    font-family: "Times New Roman", Georgia, serif;
+    font-size: 10mm;
     font-weight: 700;
     color: #333;
     line-height: 1;
   }
 
   .brand-info {
-    position: absolute;
-    top: 22mm;
-    left: 86mm;
-    width: 108mm;
-    color: #444;
+    color: #333;
     font-family: Georgia, serif;
     font-weight: 700;
     text-transform: uppercase;
-    line-height: 1.16;
-    font-size: 6.1mm;
+    line-height: 1.12;
+  }
+
+  .brand-info .name {
+    font-size: 4.2mm;
+  }
+
+  .brand-info .line {
+    font-size: 3.7mm;
   }
 
   .brand-info .phone {
-    margin-top: 2.6mm;
-    font-family: Arial, sans-serif;
-    font-size: 5mm;
+    margin-top: 1mm;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 2.9mm;
     font-weight: 700;
     text-transform: none;
-    line-height: 1.24;
+    line-height: 1.2;
   }
 
-  /* QR haut droite */
   .top-qr {
-    position: absolute;
-    top: 12mm;
-    right: 18mm;
-    width: 48mm;
     text-align: center;
   }
 
   .top-qr img {
-    width: 48mm;
-    height: 48mm;
+    width: 20mm;
+    height: 20mm;
     object-fit: contain;
     display: block;
     margin: 0 auto;
+    background: #fff;
+    border: 1px solid #444;
+    padding: 1mm;
   }
 
   .top-qr .mini-ref {
-    margin-top: 1.2mm;
-    font-size: 3.5mm;
+    margin-top: 0.8mm;
+    font-size: 2.6mm;
     color: #444;
-    letter-spacing: .15mm;
-    line-height: 1;
-  }
-
-  /* Tableau central */
-  .mid-table {
-    position: absolute;
-    left: 16mm;
-    top: 66mm;
-    width: 268mm;
-    border: 1px solid #444;
-    box-sizing: border-box;
-  }
-
-  .mid-head {
-    display: grid;
-    grid-template-columns: 40mm 1fr 90mm;
-    border-bottom: 1px solid #444;
-    font-size: 5.6mm;
-    color: #444;
-    font-family: Georgia, serif;
+    line-height: 1.1;
     font-weight: 700;
-    text-transform: uppercase;
   }
+
+  .mid-table {
+    border: 1px solid #666;
+  }
+
+	.mid-head {
+	  display: grid;
+	  grid-template-columns: 23mm 1fr 26mm;
+	  border-bottom: 1px solid #666;
+	  font-size: 3mm;
+	  color: #394b63;
+	  font-family: Arial, Helvetica, sans-serif;
+	  font-weight: 700;
+	  text-transform: uppercase;
+	  text-align: center;
+	}
 
   .mid-head > div {
-    border-right: 1px solid #444;
-    padding: 1.1mm 1.8mm;
-    text-align: center;
-    box-sizing: border-box;
+    border-right: 1px solid #666;
+    padding: 1mm 0.8mm;
   }
 
   .mid-head > div:last-child {
     border-right: none;
   }
 
-  .mid-body {
-    display: grid;
-    grid-template-columns: 40mm 1fr 90mm;
-    min-height: 36mm;
-  }
+	.mid-body {
+	  display: grid;
+	  grid-template-columns: 23mm 1fr 26mm;
+	  min-height: 18mm;
+	}
 
   .mid-body > div {
-    border-right: 1px solid #444;
-    padding: 2.4mm 2.8mm;
-    box-sizing: border-box;
+    border-right: 1px solid #666;
+    padding: 1.5mm;
   }
 
   .mid-body > div:last-child {
@@ -179,144 +207,218 @@
   }
 
   .date-cell {
-    font-size: 6.1mm;
+    font-size: 3.2mm;
     font-weight: 700;
-    line-height: 1.34;
+    line-height: 1.25;
     color: #111;
     white-space: nowrap;
   }
 
   .dest-cell {
     font-family: Georgia, serif;
-    font-size: 11.2mm;
+    font-size: 5.2mm;
     font-weight: 900;
-    line-height: 1.1;
+    line-height: 1.04;
     text-transform: uppercase;
     color: #222;
     word-break: break-word;
   }
 
   .dest-cell .phone {
-    margin-top: 2.4mm;
-    font-family: Arial, sans-serif;
-    font-size: 7.5mm;
+    margin-top: 1.2mm;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 2.9mm;
     font-weight: 700;
-    line-height: 1.06;
+    line-height: 1.12;
+    text-transform: none;
   }
 
-  .exp-cell {
-    font-family: Georgia, serif;
-    font-size: 9.2mm;
-    font-weight: 900;
-    line-height: 1.12;
-    text-transform: uppercase;
-    color: #222;
-    word-break: break-word;
-  }
+	.exp-cell {
+	  font-family: Georgia, serif;
+	  font-size: 3.9mm;
+	  font-weight: 900;
+	  line-height: 1.05;
+	  text-transform: uppercase;
+	  color: #222;
+	  word-break: break-word;
+	}
 
   .exp-cell .city {
-    margin-top: 1.8mm;
-    font-size: 6.8mm;
+    margin-top: 1.1mm;
+    font-size: 2.8mm;
     font-weight: 700;
-  }
-
-  /* Bloc bas */
-  .bottom-box {
-    position: absolute;
-    left: 16mm;
-    bottom: 14mm;
-    width: 268mm;
-    height: 40mm;
-    border: 1px solid #444;
-    box-sizing: border-box;
-    display: grid;
-    grid-template-columns: 34mm 1fr 54mm;
-    align-items: center;
-    padding: 4mm;
-    column-gap: 3mm;
-  }
-
-  .bottom-qr {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    align-self: center;
-  }
-
-  .bottom-qr img {
-    width: 24mm;
-    height: 24mm;
-    object-fit: contain;
-    display: block;
-  }
-
-  .big-ref {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-top: 1mm;
-  }
-
-  .big-ref .code {
-    font-family: Georgia, serif;
-    font-size: 22mm;
-    font-weight: 900;
-    line-height: 1;
-    letter-spacing: 0.4mm;
-    color: #222;
-  }
-
-  .big-ref .sub {
-    margin-top: 4mm;
-    font-size: 6.2mm;
-    color: #444;
+    font-family: Arial, Helvetica, sans-serif;
     text-transform: uppercase;
-    line-height: 1.1;
+    line-height: 1.15;
   }
 
-  .ratio-box {
-    text-align: center;
-    color: #555;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-self: center;
-    padding-top: 1mm;
-  }
+	.bottom-box {
+	  border: 1px solid #666;
+	  display: grid;
+	  grid-template-columns: 17mm 1fr 22mm;
+	  align-items: stretch;
+	  min-height: 28mm;
+	  height: 28mm;
+	}
 
-  .ratio-box .ratio {
-    font-family: Georgia, serif;
-    font-size: 17mm;
-    font-style: italic;
-    line-height: 1;
-  }
+	.bottom-qr {
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  height: 100%;
+	  border-right: 1px solid #666;
+	  background: #fff;
+	  padding: 1mm;
+	}
 
-  .ratio-box .agency {
-    margin-top: 5mm;
-    font-size: 6mm;
-    text-transform: uppercase;
-    line-height: 1.1;
-  }
+	.bottom-qr img {
+	  width: 10mm;
+	  height: 10mm;
+	  object-fit: contain;
+	  display: block;
+	}
+
+	.big-ref {
+	  display: flex;
+	  flex-direction: column;
+	  justify-content: center;
+	  height: 100%;
+	  padding: 1.5mm 2mm;
+	}
+	
+	.big-ref .code {
+	  font-family: Georgia, serif;
+	  font-size: 8.3mm;
+	  font-weight: 900;
+	  line-height: 0.95;
+	  letter-spacing: 0.1mm;
+	  color: #222;
+	}
+
+	.big-ref .sub {
+	  margin-top: 0.8mm;
+	  font-size: 2.7mm;
+	  color: #334d6e;
+	  text-transform: uppercase;
+	  line-height: 1.1;
+	  font-weight: 700;
+	}
+
+	.ratio-box {
+	  text-align: center;
+	  color: #666;
+	  display: flex;
+	  flex-direction: column;
+	  justify-content: center;
+	  height: 100%;
+	  border-left: 1px solid #666;
+	  padding: 1mm;
+	}
+
+	.ratio-box .ratio {
+	  font-family: Georgia, serif;
+	  font-size: 5.8mm;
+	  font-style: italic;
+	  font-weight: 700;
+	  line-height: 1;
+	}
+
+	.ratio-box .agency {
+	  margin-top: 0.7mm;
+	  font-size: 2.3mm;
+	  text-transform: uppercase;
+	  line-height: 1.1;
+	  font-weight: 700;
+	  word-break: break-word;
+	}
 
   @media print {
-    html, body {
-      background: #fff;
-    }
+	   @page {
+		size: 100mm 150mm;
+		margin: 0;
+	  }
 
-    .print-btn {
-      display: none;
-    }
+	  html, body {
+		width: 100mm !important;
+		height: auto !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		background: #fff !important;
+		overflow: visible !important;
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+	  }
 
-    .sheet {
-      width: 300mm;
-      margin: 0;
-    }
+	  .print-btn {
+		display: none !important;
+	  }
 
-    .ticket {
-      margin: 0;
-      border: none;
-    }
+	  .sheet {
+		width: 100mm !important;
+		margin: 0 !important;
+	  }
+
+	  .ticket {
+		width: 100mm !important;
+		height: 150mm !important;
+		margin: 0 !important;
+		border: none !important;
+		background: #f7f7f7 !important;
+		overflow: hidden !important;
+		page-break-after: always !important;
+		break-after: page !important;
+	  }
+
+	  .ticket:last-child {
+		page-break-after: auto !important;
+		break-after: auto !important;
   }
+}
+
+.bottom-wrap {
+  display: grid;
+  grid-template-rows: 28mm auto;
+  row-gap: 1.6mm;
+}
+
+.extra-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.4mm;
+}
+
+.info-card {
+  border: 1px solid #666;
+  background: #fafafa;
+  min-height: 11mm;
+  padding: 1.3mm 1.5mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.info-card.span-2 {
+  grid-column: span 2;
+}
+
+.info-title {
+  font-size: 2.3mm;
+  font-weight: 700;
+  color: #394b63;
+  text-transform: uppercase;
+  line-height: 1.1;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.info-value {
+  margin-top: 0.7mm;
+  font-size: 3.1mm;
+  font-weight: 700;
+  color: #111;
+  line-height: 1.15;
+  text-transform: uppercase;
+  word-break: break-word;
+}
 </style>
 </head>
 <body>
@@ -329,61 +431,103 @@
 
     <div class="top-strip">AD Logistics &amp; Services</div>
 
-    <div class="brand-logo">ADL</div>
-
-    <div class="brand-info">
-      AD LOGISTICS &amp; SERVICES<br>
-      23 RUE SIMART<br>
-      75018 PARIS
-      <div class="phone">
-        Phone: 06 02 04 53 29 - 07 75 72 93 22
-      </div>
-    </div>
-
-    <div class="top-qr">
-      <img src="data:image/png;base64,{{ label.qr_b64 }}" alt="QR Code">
-      <div class="mini-ref">{{ obj.reference }}_{{ label.index }}_{{ label.total }}</div>
-    </div>
-
-    <div class="mid-table">
-      <div class="mid-head">
-        <div>DATE</div>
-        <div>DESTINATAIRE</div>
-        <div>EXPEDITEUR</div>
-      </div>
-
-      <div class="mid-body">
-        <div class="date-cell">
-          {{ obj.date_enregistrement|date:"Y-m-d" }}<br>
-          {{ obj.created_at|date:"H:i:s" }}
+    <div class="content">
+      <div class="header-grid">
+        <div class="brand-logo">
+          {% if logo_url %}
+            <img src="{{ logo_url }}" alt="Logo entreprise">
+          {% else %}
+            <div class="fallback">ADL</div>
+          {% endif %}
         </div>
 
-        <div class="dest-cell">
-          {{ obj.destinataire_nom }}<br>
-          <div class="phone">{{ obj.destinataire_tel }}</div>
+        <div class="brand-info">
+          <div class="name">AD LOGISTICS &amp; SERVICES</div>
+          <div class="line">23 RUE SIMART</div>
+          <div class="line">75018 PARIS</div>
+          <div class="phone">Phone: 06 02 04 53 29 - 07 75 72 93 22</div>
         </div>
 
-        <div class="exp-cell">
-          {{ obj.expediteur_nom }}<br>
-          <div class="city">{{ obj.agence_destination|default:"-" }}</div>
+        <div class="top-qr">
+          <img src="data:image/png;base64,{{ label.qr_b64 }}" alt="QR Code">
+          <div class="mini-ref">{{ obj.reference }}_{{ label.index }}_{{ label.total }}</div>
         </div>
       </div>
-    </div>
 
-    <div class="bottom-box">
-      <div class="bottom-qr">
-        <img src="data:image/png;base64,{{ label.qr_b64 }}" alt="QR Code">
+      <div class="mid-table">
+        <div class="mid-head">
+          <div>DATE</div>
+          <div>DESTINATAIRE</div>
+          <div>EXPÉDITEUR</div>
+        </div>
+
+        <div class="mid-body">
+          <div class="date-cell">
+            {{ obj.date_enregistrement|date:"Y-m-d" }}<br>
+            {{ obj.created_at|date:"H:i:s" }}
+          </div>
+
+          <div class="dest-cell">
+            {{ obj.destinataire_nom }}<br>
+            <div class="phone">{{ obj.destinataire_tel }}</div>
+          </div>
+
+          <div class="exp-cell">
+            {{ obj.expediteur_nom }}<br>
+            <div class="city">{{ obj.agence_destination|default:"-" }}</div>
+          </div>
+        </div>
       </div>
 
-      <div class="big-ref">
-        <div class="code">{{ obj.reference }}</div>
-        <div class="sub">COLIS - {{ label.index }}</div>
-      </div>
+      <div class="bottom-wrap">
+		  <div class="bottom-box">
+			<div class="bottom-qr">
+			  <img src="data:image/png;base64,{{ label.qr_b64 }}" alt="QR Code">
+			</div>
 
-      <div class="ratio-box">
-        <div class="ratio">{{ label.index }}/{{ label.total }}</div>
-        <div class="agency">{{ obj.agence_destination|default:"-" }}</div>
-      </div>
+			<div class="big-ref">
+			  <div class="code">{{ obj.reference }}</div>
+			  <div class="sub">COLIS - {{ label.index }}</div>
+			</div>
+
+			<div class="ratio-box">
+			  <div class="ratio">{{ label.index }}/{{ label.total }}</div>
+			  <div class="agency">{{ obj.agence_destination|default:"-" }}</div>
+			</div>
+		  </div>
+
+		  <div class="extra-info-grid">
+			<div class="info-card">
+			  <div class="info-title">Agence expéditeur</div>
+			  <div class="info-value">{{ obj.expediteur_adresse|default:"-" }}</div>
+			</div>
+
+			<div class="info-card">
+			  <div class="info-title">Agence destination</div>
+			  <div class="info-value">{{ obj.agence_destination|default:"-" }}</div>
+			</div>
+
+			<div class="info-card">
+			  <div class="info-title">Agent</div>
+			  <div class="info-value">{{ obj.agent_nom|default:"-" }}</div>
+			</div>
+
+			<div class="info-card">
+			  <div class="info-title">Poids</div>
+			  <div class="info-value">
+				{{ obj.poids_kg|default:"-" }}{% if obj.poids_kg %} kg{% endif %}
+			  </div>
+			</div>
+
+			<div class="info-card span-2">
+			  <div class="info-title">Prix fret</div>
+			  <div class="info-value">
+				{{ obj.prix_fret_euros|default:"-" }}{% if obj.prix_fret_euros %} €{% endif %}
+			  </div>
+			</div>
+		  </div>
+		</div>
+
     </div>
 
   </div>

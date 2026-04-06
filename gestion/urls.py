@@ -6,6 +6,8 @@ urlpatterns = [
 
     path('', views.dashboard, name='dashboard'),
     
+    path("contact/", views.contact_page, name="contact_page"),
+    
     path("tracking/<str:reference>/", views.tracking_colis, name="tracking_colis"),
     
     path('export-colis/', views.export_colis, name='export_colis'),  # CSV
@@ -60,6 +62,7 @@ urlpatterns = [
     path("factures/<int:pk>/email/resend/<int:log_id>/", views.facture_email_resend, name="facture_email_resend"),
     path("factures/<int:pk>/archiver-pdf/", views.facture_archive_pdf, name="facture_archive_pdf"),
     path("factures/<int:pk>/refresh-qrcode/", views.facture_refresh_qrcode, name="facture_refresh_qrcode"),
+
 ]
 
  

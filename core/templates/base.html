@@ -13,7 +13,6 @@
 
   <!-- CSS site -->
   <link rel="stylesheet" href="{% static 'core/styles.css' %}">
-  <link rel="stylesheet" href="{% static 'gestion/dashboard.css' %}">
 
   {% block extra_css %}{% endblock %}
 </head>
@@ -28,43 +27,54 @@
     </div>
   {% endif %}
 
-  <div class="topbar">
-    <div class="container d-flex flex-wrap justify-content-between gap-2">
-      <span>📍 {{ societe_adresse }}{% if societe_ville %}, {{ societe_ville }}{% endif %}</span>
-      <span>✉️ {{ societe_email }}</span>
-      <span>📞 {{ societe_telephone_1 }}{% if societe_telephone_2 %} · {{ societe_telephone_2 }}{% endif %}</span>
-    </div>
-  </div>
-
+	<div class="topbar">
+	  <div class="container topbar-fixed">
+		<span class="topbar-item">📍 {{ societe_adresse }}{% if societe_ville %}, {{ societe_ville }}{% endif %}</span>
+		<span class="topbar-item">✉️ {{ societe_email }}</span>
+		<span class="topbar-item">📞 {{ societe_telephone_1 }}{% if societe_telephone_2 %} · {{ societe_telephone_2 }}{% endif %}</span>
+	  </div>
+	</div>
+	
   <!-- Header / Nav -->
 	<header class="header">
-	  <div class="container nav">
-		<a href="/" class="brand">
-		  <img src="{% static 'core/img/logo-adl.png' %}" alt="ADL" class="logo">
-		  <div class="brand-text">
-			<strong>{{ societe_nom }}</strong>
-			<small>{{ societe_sous_titre }}</small>
-		  </div>
-		</a>
-			<nav class="menu">
-			  <a href="/">Accueil</a>
-			  <a href="/app/">Services</a>
-			  <a href="#contact">Contact</a>
-			  {% if request.user.is_authenticated and request.user.is_staff %}
-				<a href="{% url 'dashboard_admin' %}">Administration</a>
-			  {% endif %}
-			  <span class="spacer"></span>
-			  {% if request.user.is_authenticated %}
-				<form method="post" action="{% url 'logout' %}" class="logout-form">
-				  {% csrf_token %}
-				  <button type="submit" class="nav-logout-btn">
-					<i class="bi bi-box-arrow-right"></i> Déconnexion
-				  </button>
-				</form>
-			  {% else %}
-				<a href="{% url 'login' %}">Connexion</a>
-			  {% endif %}
-			</nav>
+	  <div class="container header-fixed">
+
+		<div class="header-fixed__left">
+		  <a href="/" class="brand brand-fixed">
+			<img src="{% static 'core/img/logo-adl.png' %}" alt="ADL" class="logo">
+			<div class="brand-text">
+			  <strong>{{ societe_nom }}</strong>
+			  <small>{{ societe_sous_titre }}</small>
+			</div>
+		  </a>
+		</div>
+
+		<div class="header-fixed__center">
+		  <nav class="menu-fixed">
+			<a href="/">Accueil</a>
+			<a href="/app/">Services</a>
+			<a href="{% url 'contact_page' %}">
+			  <i class="bi bi-geo-alt"></i> Contact
+			</a>
+			{% if request.user.is_authenticated and request.user.is_staff %}
+			  <a href="{% url 'dashboard_admin' %}">Administration</a>
+			{% endif %}
+		  </nav>
+		</div>
+
+		<div class="header-fixed__right">
+		  {% if request.user.is_authenticated %}
+			<form method="post" action="{% url 'logout' %}" class="logout-form-fixed">
+			  {% csrf_token %}
+			  <button type="submit" class="nav-logout-btn">
+				<i class="bi bi-box-arrow-right"></i> Déconnexion
+			  </button>
+			</form>
+		  {% else %}
+			<a href="{% url 'login' %}" class="nav-login-fixed">Connexion</a>
+		  {% endif %}
+		</div>
+
 	  </div>
 	</header>
 
@@ -76,7 +86,10 @@
     <div class="container footer-inner">
       <span>© {{ now|date:"Y" }} {{ societe_nom|default:"AD LOGISTICS & SERVICES" }} — Rapide · Fiable · Sécurisé</span>
       <nav>
-        <a href="#contact">Contact</a>
+		<a href="{% url 'contact_page' %}" class="dashboard-shortcut">
+		  <i class="bi bi-geo-alt"></i>
+		  <span>Contact</span>
+		</a>
         <a href="#">Mentions légales</a>
         <a href="#">CGV</a>
       </nav>

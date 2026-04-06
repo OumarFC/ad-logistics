@@ -46,11 +46,15 @@ from django.core.mail import EmailMessage
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from django.contrib import messages
 from django.core.mail import EmailMessage
-from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from .utils_facture import archive_facture_pdf, ensure_facture_qrcode
+from administration.models import Parametre
+from urllib.parse import quote_plus
+from django.core.mail import send_mail
+from administration.utils import get_societe_context_data
+
+
 
 def get_named_period_dates(request, prefix):
     today = timezone.localdate()
@@ -524,6 +528,12 @@ def get_transfert_bilan(queryset):
         total_a_recevoir=Coalesce(Sum("montant_reception"), Decimal("0.00")),
     )
 
+def get_param(key):
+    try:
+        return Parametre.objects.get(cle=key).valeur
+    except Parametre.DoesNotExist:
+        return None
+
 @ login_required(login_url='/accounts/login/')
 @ user_passes_test(_staff_required)
 def dashboard(request):
@@ -540,7 +550,7 @@ def dashboard(request):
     sms_initial = {}
     sms_numeros = request.GET.get("sms_numeros", "").strip()
     sms_message = request.GET.get("sms_message", "").strip()
-
+    
     if sms_numeros:
         sms_initial["numeros"] = sms_numeros
     if sms_message:
@@ -669,6 +679,18 @@ def dashboard(request):
     transfert_bilan_qs = apply_date_filter(transfert_bilan_qs, "date_transfert", transfert_du, transfert_au)
     transfert_bilan = get_transfert_bilan(transfert_bilan_qs)
     transfert_sous_totaux = get_transfert_sous_totaux(transfert_bilan_qs)
+    
+    logo_url = None
+    try:
+        logo_param = Parametre.objects.filter(cle="societe_logo").first()
+        if logo_param and getattr(logo_param, "fichier", None):
+            logo_url = logo_param.fichier.url
+        elif logo_param and getattr(logo_param, "image", None):
+            logo_url = logo_param.image.url
+        elif logo_param and getattr(logo_param, "valeur", None):
+            logo_url = logo_param.valeur
+    except Exception:
+        logo_url = None
 
     context = {
         "colis_form": colis_form,
@@ -683,6 +705,7 @@ def dashboard(request):
         "facture_list": facture_list,
         "sms_list": sms_list,
         "search_results": None,
+        "logo_url": logo_url,
         "bilan": {
             "filters": {},
             "reset": {},
@@ -983,22 +1006,28 @@ def _qr_to_base64(data: str) -> str:
     img.save(buffer, format="PNG")
     return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
-
 def fret_print(request, pk):
-    obj = get_object_or_404(ColisRecu, pk=pk)
-
-    total = obj.nb_colis_total if obj.nb_colis_total and obj.nb_colis_total > 0 else 1
+    obj = get_object_or_404(ColisRecu, pk=pk)  # adapte si ton modèle diffère
 
     labels = []
+    total = obj.nb_colis_total or 1
+
     for i in range(1, total + 1):
-        qr_payload = request.build_absolute_uri(
-            f"/app/tracking/{obj.reference}/?piece={i}-{total}"
-        )
+        qr_payload = request.build_absolute_uri(f"/app/tracking/{obj.reference}/")
+        qr_b64 = _qr_to_base64(qr_payload)
         labels.append({
             "index": i,
             "total": total,
-            "qr_b64": _qr_to_base64(qr_payload),
+            "qr_b64": qr_b64,
         })
+
+    param_logo = Parametre.objects.filter(
+        cle="societe_logo",
+        actif=True,
+        fichier__isnull=False,
+    ).first()
+
+    logo_url = request.build_absolute_uri(param_logo.fichier.url) if param_logo and param_logo.fichier else None
 
     return render(
         request,
@@ -1006,6 +1035,7 @@ def fret_print(request, pk):
         {
             "obj": obj,
             "labels": labels,
+            "logo_url": logo_url,
         },
     )
 
@@ -1033,11 +1063,20 @@ def transfert_delete(request, pk):
         return redirect("/app/#envoye")
     return render(request, "gestion/transfert_delete.html", {"obj": obj})
 
+  
 def transfert_print(request, pk):
     obj = get_object_or_404(TransfertArgent, pk=pk)
 
     qr_payload = request.build_absolute_uri(f"/app/tracking-transfert/{obj.reference}/")
     qr_b64 = _qr_to_base64(qr_payload)
+
+    param_logo = Parametre.objects.filter(
+        cle="societe_logo",
+        actif=True,
+        fichier__isnull=False,
+    ).first()
+
+    logo_url = request.build_absolute_uri(param_logo.fichier.url) if param_logo and param_logo.fichier else None
 
     return render(
         request,
@@ -1045,8 +1084,10 @@ def transfert_print(request, pk):
         {
             "obj": obj,
             "qr_b64": qr_b64,
+            "logo_url": logo_url,
         },
     )
+ 
     
 def tracking_colis(request, reference):
     obj = get_object_or_404(ColisRecu, reference=reference)
@@ -1673,3 +1714,107 @@ def facture_refresh_qrcode(request, pk):
     ensure_facture_qrcode(request, facture, save_model=True)
     messages.success(request, f"QR code mis à jour pour {facture.numero}.")
     return redirect("facture_detail", pk=facture.pk)
+
+@login_required
+def contact_page(request):
+    """
+    Page contact :
+    - utilise les paramètres société fournis par le context processor
+    - construit l'URL de la carte
+    - gère l'envoi du formulaire de contact
+    """
+
+    # On récupère les infos société uniquement pour la logique interne de la vue
+    # Le template recevra déjà ces variables via le context processor.
+    societe_ctx = get_societe_context_data()
+
+    societe_email = societe_ctx.get("societe_email", "") or getattr(settings, "DEFAULT_FROM_EMAIL", "")
+    societe_adresse = societe_ctx.get("societe_adresse", "")
+    societe_ville = societe_ctx.get("societe_ville", "")
+    societe_pays = societe_ctx.get("societe_pays", "")
+
+    # Construction adresse complète pour la carte
+    adresse_complete_parts = [
+        str(societe_adresse).strip(),
+        str(societe_ville).strip(),
+        str(societe_pays).strip(),
+    ]
+    adresse_complete = ", ".join([part for part in adresse_complete_parts if part])
+
+    if not adresse_complete:
+        adresse_complete = "Paris"
+
+    adresse_map = quote_plus(adresse_complete)
+    map_embed_url = (
+        f"https://maps.google.com/maps?q={adresse_map}&t=&z=15&ie=UTF8&iwloc=&output=embed"
+    )
+
+    # Valeurs par défaut du formulaire
+    nom = ""
+    email = ""
+    telephone = ""
+    sujet = ""
+    message_txt = ""
+
+    if request.method == "POST":
+        nom = request.POST.get("nom", "").strip()
+        email = request.POST.get("email", "").strip()
+        telephone = request.POST.get("telephone", "").strip()
+        sujet = request.POST.get("sujet", "").strip()
+        message_txt = request.POST.get("message", "").strip()
+
+        erreurs = []
+
+        if not nom:
+            erreurs.append("Le nom est obligatoire.")
+        if not email:
+            erreurs.append("L'email est obligatoire.")
+        if not sujet:
+            erreurs.append("Le sujet est obligatoire.")
+        if not message_txt:
+            erreurs.append("Le message est obligatoire.")
+
+        if erreurs:
+            for err in erreurs:
+                messages.error(request, err)
+        else:
+            try:
+                corps = f"""Nouveau message depuis la page Contact
+
+Nom : {nom}
+Email : {email}
+Téléphone : {telephone}
+Sujet : {sujet}
+
+Message :
+{message_txt}
+"""
+
+                destinataire = societe_email or getattr(settings, "DEFAULT_FROM_EMAIL", "")
+
+                if not destinataire:
+                    messages.error(request, "Aucun email de destination n'est configuré.")
+                else:
+                    send_mail(
+                        subject=f"[Contact] {sujet}",
+                        message=corps,
+                        from_email=getattr(settings, "DEFAULT_FROM_EMAIL", email or None),
+                        recipient_list=[destinataire],
+                        fail_silently=False,
+                    )
+                    messages.success(request, "Votre message a été envoyé avec succès.")
+                    return redirect("contact_page")
+
+            except Exception as e:
+                messages.error(request, f"Erreur lors de l'envoi du message : {e}")
+
+    context = {
+        "map_embed_url": map_embed_url,
+        "form_nom": nom,
+        "form_email": email,
+        "form_telephone": telephone,
+        "form_sujet": sujet,
+        "form_message": message_txt,
+    }
+
+    return render(request, "gestion/contact_page.html", context)

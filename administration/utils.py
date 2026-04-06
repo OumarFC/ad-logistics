@@ -37,7 +37,7 @@ def get_param_number(entreprise=None, cle="", default=0):
         return float(get_param_value(entreprise=entreprise, cle=cle, default=default))
     except (TypeError, ValueError):
         return default
-
+        
 def get_societe_context_data():
     entreprise = EntrepriseCliente.objects.filter(actif=True).order_by("id").first()
 
@@ -56,6 +56,8 @@ def get_societe_context_data():
             "societe_site_web": "",
             "societe_slogan": "",
             "societe_couleur_principale": "#0c4a78",
+            "societe_whatsapp": "",
+            "societe_horaires": "",
         }
 
     logo_url = ""
@@ -89,4 +91,6 @@ def get_societe_context_data():
         "societe_site_web": get_param_value(entreprise, "societe_site_web", ""),
         "societe_slogan": get_param_value(entreprise, "societe_slogan", ""),
         "societe_couleur_principale": get_param_value(entreprise, "societe_couleur_principale", "#0c4a78"),
+        "societe_whatsapp": get_param_value(entreprise, "societe_whatsapp", ""),
+        "societe_horaires": get_param_value(entreprise, "societe_horaires", ""),
     }

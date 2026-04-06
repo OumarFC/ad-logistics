@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/contact.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ctc-page">
+  <section class="ctc-hero">
+    <div class="ctc-hero__left">
+      <div class="ctc-hero__logo">
+        {% if societe_logo %}
+          <img src="{{ societe_logo }}" alt="Logo {{ societe_nom }}">
+        {% else %}
+          <span>ADL</span>
+        {% endif %}
+      </div>
+
+      <div class="ctc-hero__text">
+        <h1>Contact & localisation</h1>
+        <p>{{ societe_nom }} — {{ societe_sous_titre }}</p>
+      </div>
+    </div>
+
+    <div class="ctc-hero__actions">
+      {% if societe_telephone_1 %}
+        <a href="tel:{{ societe_telephone_1 }}" class="ctc-btn ctc-btn--gold">
+          <i class="bi bi-telephone-fill"></i>
+          <span>Appeler</span>
+        </a>
+      {% endif %}
+
+      {% if societe_email %}
+        <a href="mailto:{{ societe_email }}" class="ctc-btn ctc-btn--light">
+          <i class="bi bi-envelope-fill"></i>
+          <span>Email</span>
+        </a>
+      {% endif %}
+
+      {% if societe_whatsapp %}
+        <a href="https://wa.me/{{ societe_whatsapp|cut:' '|cut:'+' }}" target="_blank" class="ctc-btn ctc-btn--light">
+          <i class="bi bi-whatsapp"></i>
+          <span>WhatsApp</span>
+        </a>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="ctc-grid">
+    <aside class="ctc-side">
+      <div class="ctc-card">
+        <div class="ctc-card__head">
+          <h2>Coordonnées</h2>
+        </div>
+        <div class="ctc-card__body">
+          <div class="ctc-list">
+            <div class="ctc-item">
+              <div class="ctc-item__icon"><i class="bi bi-geo-alt-fill"></i></div>
+              <div class="ctc-item__content">
+                <strong>Adresse</strong>
+                <div>{{ societe_adresse }}</div>
+              </div>
+            </div>
+
+            <div class="ctc-item">
+              <div class="ctc-item__icon"><i class="bi bi-telephone-fill"></i></div>
+              <div class="ctc-item__content">
+                <strong>Téléphone</strong>
+                {% if societe_telephone_1 %}
+                  <div><a href="tel:{{ societe_telephone_1 }}">{{ societe_telephone_1 }}</a></div>
+                {% endif %}
+                {% if societe_telephone_2 %}
+                  <div><a href="tel:{{ societe_telephone_2 }}">{{ societe_telephone_2 }}</a></div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="ctc-item">
+              <div class="ctc-item__icon"><i class="bi bi-envelope-fill"></i></div>
+              <div class="ctc-item__content">
+                <strong>Email</strong>
+                <div><a href="mailto:{{ societe_email }}">{{ societe_email }}</a></div>
+              </div>
+            </div>
+
+            <div class="ctc-item">
+              <div class="ctc-item__icon"><i class="bi bi-clock-fill"></i></div>
+              <div class="ctc-item__content">
+                <strong>Horaires</strong>
+                <div>{{ societe_horaires }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ctc-card">
+        <div class="ctc-card__head">
+          <h2>Accès rapide</h2>
+        </div>
+        <div class="ctc-card__body">
+          <div class="ctc-actions">
+            <a class="ctc-action ctc-action--dark"
+               target="_blank"
+               href="https://www.google.com/maps/search/?api=1&query={{ societe_adresse|urlencode }}">
+              <i class="bi bi-sign-turn-right-fill"></i>
+              <span>Ouvrir dans Google Maps</span>
+            </a>
+
+            {% if societe_whatsapp %}
+              <a class="ctc-action ctc-action--whatsapp"
+                 target="_blank"
+                 href="https://wa.me/{{ societe_whatsapp|cut:' '|cut:'+' }}">
+                <i class="bi bi-whatsapp"></i>
+                <span>Écrire sur WhatsApp</span>
+              </a>
+            {% endif %}
+
+            {% if societe_email %}
+              <a class="ctc-action" href="mailto:{{ societe_email }}">
+                <i class="bi bi-envelope"></i>
+                <span>Envoyer un email</span>
+              </a>
+            {% endif %}
+
+            {% if societe_telephone_1 %}
+              <a class="ctc-action" href="tel:{{ societe_telephone_1 }}">
+                <i class="bi bi-telephone"></i>
+                <span>Appeler maintenant</span>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="ctc-main">
+      <div class="ctc-card">
+        <div class="ctc-card__head">
+          <h2>Plan d'accès</h2>
+        </div>
+        <div class="ctc-card__body">
+          <iframe
+            class="ctc-map"
+            src="{{ map_embed_url }}"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen>
+          </iframe>
+
+          <div class="ctc-map-actions">
+            <a class="ctc-map-btn ctc-map-btn--dark"
+               target="_blank"
+               href="https://www.google.com/maps/search/?api=1&query={{ societe_adresse|urlencode }}">
+              <i class="bi bi-geo-alt-fill"></i>
+              <span>Itinéraire</span>
+            </a>
+
+            {% if societe_telephone_1 %}
+              <a class="ctc-map-btn" href="tel:{{ societe_telephone_1 }}">
+                <i class="bi bi-telephone-fill"></i>
+                <span>Appeler</span>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="ctc-card">
+        <div class="ctc-card__head">
+          <h2>Formulaire de contact</h2>
+        </div>
+        <div class="ctc-card__body">
+          {% if messages %}
+            <div class="ctc-messages">
+              {% for message in messages %}
+                <div class="ctc-message {% if 'success' in message.tags %}ctc-message--success{% else %}ctc-message--error{% endif %}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <form method="post" class="ctc-form">
+            {% csrf_token %}
+
+            <div class="ctc-form__grid">
+              <div class="ctc-field">
+                <label for="id_nom">Nom complet</label>
+                <input type="text" id="id_nom" name="nom" value="{{ form_nom }}" required>
+              </div>
+
+              <div class="ctc-field">
+                <label for="id_email">Email</label>
+                <input type="email" id="id_email" name="email" value="{{ form_email }}" required>
+              </div>
+
+              <div class="ctc-field">
+                <label for="id_telephone">Téléphone</label>
+                <input type="text" id="id_telephone" name="telephone" value="{{ form_telephone }}">
+              </div>
+
+              <div class="ctc-field">
+                <label for="id_sujet">Sujet</label>
+                <input type="text" id="id_sujet" name="sujet" value="{{ form_sujet }}" required>
+              </div>
+
+              <div class="ctc-field ctc-field--full">
+                <label for="id_message">Message</label>
+                <textarea id="id_message" name="message" required>{{ form_message }}</textarea>
+              </div>
+            </div>
+
+            <div class="ctc-form__actions">
+              <button type="submit" class="ctc-submit">
+                <i class="bi bi-send-fill"></i>
+                <span>Envoyer le message</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

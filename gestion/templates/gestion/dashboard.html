@@ -7,8 +7,8 @@
 {% endblock %}
 
 {% block content %}
-<section class="section">
-  <div class="container">
+<section class="section dashboard-page">
+  <div class="dashboard-page__container">
     <div class="ad-dashboard">
 
       {% if messages %}
@@ -25,9 +25,10 @@
       <div class="tabsbar">
         <button class="tab active" data-tab="recu" type="button">Fret</button>
         <button class="tab" data-tab="envoye" type="button">Colis</button>
-        <button class="tab" data-tab="facture" type="button">Nouvelles facture</button>
        <!-- <button class="tab" data-tab="devis" type="button">Devis</button>-->
-        <button class="tab" data-tab="bilans" type="button">Bilans</button>
+        <button class="tab" data-tab="bilan-fret" type="button">Bilan Fret</button>
+		<button class="tab" data-tab="bilan-transfert" type="button">Bilan Transfert Colis</button>
+		<button class="tab" data-tab="facture" type="button">Nouvelles facture</button>
         <button class="tab" data-tab="sms" type="button">Envoyer SMS</button>
 		 <button class="tab" data-tab="recherche" type="button">Rechercher colis</button>
 		<!--<button class="tab" data-tab="conf" type="button">Confectionnement</button>
@@ -989,280 +990,310 @@
             </table>
           </div>
         </section>
+       <!-- BILAN FRET -->
+		<section class="panel" id="panel-bilan-fret">
 
-        <!-- BILANS -->
-        <section class="panel" id="panel-bilans">
+			<div class="bilan-header-card contact-style-hero">
+			  <div class="bilan-brand">
+				<div class="bilan-logo-wrap contact-style-logo">
+				  {% if societe_logo %}
+					<img src="{{ societe_logo }}" alt="Logo {{ societe_nom }}" class="bilan-logo">
+				  {% else %}
+					<img src="{% static 'gestion/img/logo-adl.png' %}" alt="Logo" class="bilan-logo">
+				  {% endif %}
+				</div>
 
-          <div class="bilan-header-card">
-            <div class="bilan-brand">
-              <div class="bilan-logo-wrap">
-                <img src="{% static 'gestion/img/logo-adl.png' %}" alt="AD Logistics" class="bilan-logo">
-              </div>
-              <div class="bilan-header-left">
-                <h2>Bilan Fret / Colis</h2>
-                <p>Suivi indépendant des opérations Fret.</p>
-              </div>
-            </div>
+				<div class="bilan-header-left contact-style-text">
+				  <h2>Bilan Fret</h2>
+				  <p>{{ societe_nom }} — {{ societe_sous_titre }}</p>
+				</div>
+			  </div>
 
-            <div class="bilan-header-actions no-print">
-              <button type="button" class="btn" onclick="printSection('bilan-fret-print-area')">Imprimer Fret</button>
-              <a class="btn ghost" href="{% url 'bilan_fret_pdf' %}?fret_periode={{ fret_period }}{% if request.GET.fret_du %}&fret_du={{ request.GET.fret_du }}{% endif %}{% if request.GET.fret_au %}&fret_au={{ request.GET.fret_au }}{% endif %}">PDF Fret</a>
-            </div>
-          </div>
+			  <div class="bilan-header-actions no-print contact-style-actions">
+				<button type="button" class="hero-btn primary" onclick="printSection('bilan-fret-print-area')">
+				  <i class="bi bi-printer-fill"></i>
+				  Imprimer
+				</button>
 
-          <div id="bilan-fret-print-area">
-            <div class="capsule bilan-filter-card">
-              <div class="capsule-body" style="display:block;">
-                <form class="form-grid" method="get" action="#bilans">
-                  <label>
-                    Période Fret
-                    <select name="fret_periode" id="id_fret_periode">
-                      <option value="jour" {% if fret_period == 'jour' or not fret_period %}selected{% endif %}>Jour J</option>
-                      <option value="semaine" {% if fret_period == 'semaine' %}selected{% endif %}>Semaine</option>
-                      <option value="mois" {% if fret_period == 'mois' %}selected{% endif %}>Mois</option>
-                      <option value="libre" {% if fret_period == 'libre' %}selected{% endif %}>Période libre</option>
-                    </select>
-                  </label>
+				<a class="hero-btn secondary"
+				   href="{% url 'bilan_fret_pdf' %}?fret_periode={{ fret_period }}{% if request.GET.fret_du %}&fret_du={{ request.GET.fret_du }}{% endif %}{% if request.GET.fret_au %}&fret_au={{ request.GET.fret_au }}{% endif %}">
+				  <i class="bi bi-file-earmark-pdf-fill"></i>
+				  PDF
+				</a>
+			  </div>
+			</div>
 
-                  <label>
-                    Du
-                    <input type="date" name="fret_du" id="id_fret_du" value="{{ request.GET.fret_du }}">
-                  </label>
+		  <div id="bilan-fret-print-area">
+			<div class="capsule bilan-filter-card">
+			  <div class="capsule-body" style="display:block;">
+				<form class="form-grid" method="get" action="#bilan-fret">
+				  <label>
+					Période Fret
+					<select name="fret_periode" id="id_fret_periode">
+					  <option value="jour" {% if fret_period == 'jour' or not fret_period %}selected{% endif %}>Jour J</option>
+					  <option value="semaine" {% if fret_period == 'semaine' %}selected{% endif %}>Semaine</option>
+					  <option value="mois" {% if fret_period == 'mois' %}selected{% endif %}>Mois</option>
+					  <option value="libre" {% if fret_period == 'libre' %}selected{% endif %}>Période libre</option>
+					</select>
+				  </label>
 
-                  <label>
-                    Au
-                    <input type="date" name="fret_au" id="id_fret_au" value="{{ request.GET.fret_au }}">
-                  </label>
+				  <label>
+					Du
+					<input type="date" name="fret_du" id="id_fret_du" value="{{ request.GET.fret_du }}">
+				  </label>
 
-                  <div class="form-actions no-print">
-                    <button class="btn" type="submit">Appliquer</button>
-                  </div>
-                </form>
-              </div>
-            </div>
+				  <label>
+					Au
+					<input type="date" name="fret_au" id="id_fret_au" value="{{ request.GET.fret_au }}">
+				  </label>
 
-            <div class="bilan-section-card fret-theme">
-              <div class="bilan-section-head">
-                <div class="bilan-title-block">
-                  <span class="bilan-mini-label">SYNTHÈSE</span>
-                  <h3>Bilan Fret / Colis</h3>
-                  <p>Historique et totaux des frets enregistrés sur la période.</p>
-                </div>
-              </div>
+				  <div class="form-actions no-print">
+					<button class="btn" type="submit">Appliquer</button>
+				  </div>
+				</form>
+			  </div>
+			</div>
 
-              <div class="bilan-kpis">
-                <article class="kpi-card">
-                  <div class="kpi-top"><span class="kpi-label">Opérations</span></div>
-                  <div class="kpi-value">{{ fret_bilan.nb_operations|default:0 }}</div>
-                </article>
+			<div class="bilan-section-card fret-theme">
+			  <div class="bilan-section-head">
+				<div class="bilan-title-block">
+				  <span class="bilan-mini-label">SYNTHÈSE</span>
+				  <h3>Bilan Fret</h3>
+				  <p>Historique et totaux des frets enregistrés sur la période.</p>
+				</div>
+			  </div>
 
-                <article class="kpi-card">
-                  <div class="kpi-top"><span class="kpi-label">Total fret</span></div>
-                  <div class="kpi-value">{{ fret_bilan.total_prix_fret|default:"0.00" }} <small>€</small></div>
-                </article>
+			  <div class="bilan-kpis">
+				<article class="kpi-card">
+				  <div class="kpi-top"><span class="kpi-label">Opérations</span></div>
+				  <div class="kpi-value">{{ fret_bilan.nb_operations|default:0 }}</div>
+				</article>
 
-                <article class="kpi-card">
-                  <div class="kpi-top"><span class="kpi-label">Total restant</span></div>
-                  <div class="kpi-value">{{ fret_bilan.total_restant|default:"0.00" }} <small>€</small></div>
-                </article>
+				<article class="kpi-card">
+				  <div class="kpi-top"><span class="kpi-label">Total fret</span></div>
+				  <div class="kpi-value">{{ fret_bilan.total_prix_fret|default:"0.00" }} <small>€</small></div>
+				</article>
 
-                <article class="kpi-card">
-                  <div class="kpi-top"><span class="kpi-label">Poids total</span></div>
-                  <div class="kpi-value">{{ fret_bilan.total_poids|default:"0.00" }} <small>kg</small></div>
-                </article>
+				<article class="kpi-card">
+				  <div class="kpi-top"><span class="kpi-label">Total restant</span></div>
+				  <div class="kpi-value">{{ fret_bilan.total_restant|default:"0.00" }} <small>€</small></div>
+				</article>
 
-                <article class="kpi-card">
-                  <div class="kpi-top"><span class="kpi-label">Nb colis</span></div>
-                  <div class="kpi-value">{{ fret_bilan.total_nb_colis|default:0 }}</div>
-                </article>
-              </div>
+				<article class="kpi-card">
+				  <div class="kpi-top"><span class="kpi-label">Poids total</span></div>
+				  <div class="kpi-value">{{ fret_bilan.total_poids|default:"0.00" }} <small>kg</small></div>
+				</article>
 
-              <div class="table-wrap bilan-table-wrap">
-                <table class="table bilan-table">
-                  <thead>
-                    <tr>
-                      <th>Réf</th>
-                      <th>Date</th>
-                      <th>Expéditeur</th>
-                      <th>Destinataire</th>
-                      <th>Prix fret</th>
-                      <th>Restant</th>
-                      <th>Poids</th>
-                      <th>Nb colis</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for c in fret_bilan_list %}
-                    <tr>
-                      <td>{{ c.reference }}</td>
-                      <td>{{ c.date_enregistrement }}</td>
-                      <td>{{ c.expediteur_nom }}</td>
-                      <td>{{ c.destinataire_nom }}</td>
-                      <td>{{ c.prix_fret_euros }} €</td>
-                      <td>{{ c.restant_euros }} €</td>
-                      <td>{{ c.poids_kg }} kg</td>
-                      <td>{{ c.nb_colis_total }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr><td colspan="8" class="empty-row">Aucun fret sur cette période.</td></tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+				<article class="kpi-card">
+				  <div class="kpi-top"><span class="kpi-label">Nb colis</span></div>
+				  <div class="kpi-value">{{ fret_bilan.total_nb_colis|default:0 }}</div>
+				</article>
+			  </div>
 
-          <div class="bilan-header-card" style="margin-top:24px;">
-            <div class="bilan-brand">
-              <div class="bilan-logo-wrap">
-                <img src="{% static 'gestion/img/logo-adl.png' %}" alt="AD Logistics" class="bilan-logo">
-              </div>
-              <div class="bilan-header-left">
-                <h2>Bilan Transfert d’argent</h2>
-                <p>Suivi indépendant des opérations de transfert d’argent.</p>
-              </div>
-            </div>
+			  <div class="table-wrap bilan-table-wrap">
+				<table class="table bilan-table">
+				  <thead>
+					<tr>
+					  <th>Réf</th>
+					  <th>Date</th>
+					  <th>Expéditeur</th>
+					  <th>Destinataire</th>
+					  <th>Prix fret</th>
+					  <th>Restant</th>
+					  <th>Poids</th>
+					  <th>Nb colis</th>
+					</tr>
+				  </thead>
+				  <tbody>
+					{% for c in fret_bilan_list %}
+					<tr>
+					  <td>{{ c.reference }}</td>
+					  <td>{{ c.date_enregistrement }}</td>
+					  <td>{{ c.expediteur_nom }}</td>
+					  <td>{{ c.destinataire_nom }}</td>
+					  <td>{{ c.prix_fret_euros }} €</td>
+					  <td>{{ c.restant_euros }} €</td>
+					  <td>{{ c.poids_kg }} kg</td>
+					  <td>{{ c.nb_colis_total }}</td>
+					</tr>
+					{% empty %}
+					<tr><td colspan="8" class="empty-row">Aucun fret sur cette période.</td></tr>
+					{% endfor %}
+				  </tbody>
+				</table>
+			  </div>
+			</div>
+		  </div>
+		</section>
+		
+		<!-- BILAN TRANSFERT -->
+		
+		<section class="panel" id="panel-bilan-transfert">
 
-            <div class="bilan-header-actions no-print">
-              <button type="button" class="btn" onclick="printSection('bilan-transfert-print-area')">Imprimer Transfert</button>
-              <a class="btn ghost" href="{% url 'bilan_transfert_pdf' %}?transfert_periode={{ transfert_period }}{% if request.GET.transfert_du %}&transfert_du={{ request.GET.transfert_du }}{% endif %}{% if request.GET.transfert_au %}&transfert_au={{ request.GET.transfert_au }}{% endif %}">PDF Transfert</a>
-            </div>
-          </div>
+			<div class="bilan-header-card contact-style-hero">
+			  <div class="bilan-brand">
+				<div class="bilan-logo-wrap contact-style-logo">
+				  {% if societe_logo %}
+					<img src="{{ societe_logo }}" alt="Logo {{ societe_nom }}" class="bilan-logo">
+				  {% else %}
+					<img src="{% static 'gestion/img/logo-adl.png' %}" alt="Logo" class="bilan-logo">
+				  {% endif %}
+				</div>
 
-          <div id="bilan-transfert-print-area">
-            <div class="capsule bilan-filter-card">
-              <div class="capsule-body" style="display:block;">
-                <form class="form-grid" method="get" action="#bilans">
-                  <label>
-                    Période Transfert
-                    <select name="transfert_periode" id="id_transfert_periode">
-                      <option value="jour" {% if transfert_period == 'jour' or not transfert_period %}selected{% endif %}>Jour J</option>
-                      <option value="semaine" {% if transfert_period == 'semaine' %}selected{% endif %}>Semaine</option>
-                      <option value="mois" {% if transfert_period == 'mois' %}selected{% endif %}>Mois</option>
-                      <option value="libre" {% if transfert_period == 'libre' %}selected{% endif %}>Période libre</option>
-                    </select>
-                  </label>
+				<div class="bilan-header-left contact-style-text">
+				  <h2>Bilan Transfert de Colis</h2>
+				  <p>{{ societe_nom }} — {{ societe_sous_titre }}</p>
+				</div>
+			  </div>
 
-                  <label>
-                    Du
-                    <input type="date" name="transfert_du" id="id_transfert_du" value="{{ request.GET.transfert_du }}">
-                  </label>
+			  <div class="bilan-header-actions no-print contact-style-actions">
+				<button type="button" class="hero-btn primary" onclick="printSection('bilan-transfert-print-area')">
+				  <i class="bi bi-printer-fill"></i>
+				  Imprimer
+				</button>
 
-                  <label>
-                    Au
-                    <input type="date" name="transfert_au" id="id_transfert_au" value="{{ request.GET.transfert_au }}">
-                  </label>
+				<a class="hero-btn secondary"
+				   href="{% url 'bilan_transfert_pdf' %}?transfert_periode={{ transfert_period }}{% if request.GET.transfert_du %}&transfert_du={{ request.GET.transfert_du }}{% endif %}{% if request.GET.transfert_au %}&transfert_au={{ request.GET.transfert_au }}{% endif %}">
+				  <i class="bi bi-file-earmark-pdf-fill"></i>
+				  PDF
+				</a>
+			  </div>
+			</div>
 
-                  <div class="form-actions no-print">
-                    <button class="btn" type="submit">Appliquer</button>
-                  </div>
-                </form>
-              </div>
-            </div>
+		  <div id="bilan-transfert-print-area">
+			<div class="capsule bilan-filter-card">
+			  <div class="capsule-body" style="display:block;">
+				<form class="form-grid" method="get" action="#bilan-transfert">
+				  <label>
+					Période Transfert
+					<select name="transfert_periode" id="id_transfert_periode">
+					  <option value="jour" {% if transfert_period == 'jour' or not transfert_period %}selected{% endif %}>Jour J</option>
+					  <option value="semaine" {% if transfert_period == 'semaine' %}selected{% endif %}>Semaine</option>
+					  <option value="mois" {% if transfert_period == 'mois' %}selected{% endif %}>Mois</option>
+					  <option value="libre" {% if transfert_period == 'libre' %}selected{% endif %}>Période libre</option>
+					</select>
+				  </label>
 
-            <div class="bilan-section-card transfert-theme">
-              <div class="bilan-section-head">
-                <div class="bilan-title-block">
-                  <span class="bilan-mini-label">SYNTHÈSE</span>
-                  <h3>Bilan Transfert d’argent</h3>
-                  <p>Historique et synthèse des opérations de transfert sur la période.</p>
-                </div>
-              </div>
+				  <label>
+					Du
+					<input type="date" name="transfert_du" id="id_transfert_du" value="{{ request.GET.transfert_du }}">
+				  </label>
 
-              <div class="bilan-kpis">
-                <article class="kpi-card">
-                  <div class="kpi-top"><span class="kpi-label">Opérations</span></div>
-                  <div class="kpi-value">{{ transfert_bilan.nb_operations|default:0 }}</div>
-                </article>
+				  <label>
+					Au
+					<input type="date" name="transfert_au" id="id_transfert_au" value="{{ request.GET.transfert_au }}">
+				  </label>
 
-                <article class="kpi-card">
-                  <div class="kpi-top"><span class="kpi-label">Sommes envoyées</span></div>
-                  <div class="kpi-value">{{ transfert_bilan.total_envoye|default:"0.00" }}</div>
-                </article>
+				  <div class="form-actions no-print">
+					<button class="btn" type="submit">Appliquer</button>
+				  </div>
+				</form>
+			  </div>
+			</div>
 
-                <article class="kpi-card">
-                  <div class="kpi-top"><span class="kpi-label">Frais d’envoi</span></div>
-                  <div class="kpi-value">{{ transfert_bilan.total_frais|default:"0.00" }}</div>
-                </article>
+			<div class="bilan-section-card transfert-theme">
+			  <div class="bilan-section-head">
+				<div class="bilan-title-block">
+				  <span class="bilan-mini-label">SYNTHÈSE</span>
+				  <h3>Bilan Transfert de Colis</h3>
+				  <p>Historique et synthèse des opérations de transfert sur la période.</p>
+				</div>
+			  </div>
 
-                <article class="kpi-card">
-                  <div class="kpi-top"><span class="kpi-label">Total payé</span></div>
-                  <div class="kpi-value">{{ transfert_bilan.total_a_payer|default:"0.00" }}</div>
-                </article>
+			  <div class="bilan-kpis">
+				<article class="kpi-card">
+				  <div class="kpi-top"><span class="kpi-label">Opérations</span></div>
+				  <div class="kpi-value">{{ transfert_bilan.nb_operations|default:0 }}</div>
+				</article>
 
-                <article class="kpi-card">
-                  <div class="kpi-top"><span class="kpi-label">Sommes reçues</span></div>
-                  <div class="kpi-value">{{ transfert_bilan.total_a_recevoir|default:"0.00" }}</div>
-                </article>
-              </div>
+				<article class="kpi-card">
+				  <div class="kpi-top"><span class="kpi-label">Sommes envoyées</span></div>
+				  <div class="kpi-value">{{ transfert_bilan.total_envoye|default:"0.00" }}</div>
+				</article>
 
-              <div class="subtotals-grid">
-                <div class="subtotals-card">
-                  <h4>Sous-totaux envoi</h4>
-                  {% for row in transfert_sous_totaux.envoi %}
-                    <div class="subtotal-line">
-                      <strong>{{ row.devise_envoi }}</strong>
-                      <span>Envoyé : {{ row.total_envoye }}</span>
-                      <span>Frais : {{ row.total_frais }}</span>
-                      <span>Total payé : {{ row.total_a_payer }}</span>
-                      <span>Ops : {{ row.nb_operations }}</span>
-                    </div>
-                  {% empty %}
-                    <div class="subtotal-empty">Aucune donnée.</div>
-                  {% endfor %}
-                </div>
+				<article class="kpi-card">
+				  <div class="kpi-top"><span class="kpi-label">Frais d’envoi</span></div>
+				  <div class="kpi-value">{{ transfert_bilan.total_frais|default:"0.00" }}</div>
+				</article>
 
-                <div class="subtotals-card">
-                  <h4>Sous-totaux réception</h4>
-                  {% for row in transfert_sous_totaux.reception %}
-                    <div class="subtotal-line">
-                      <strong>{{ row.devise_reception }}</strong>
-                      <span>Reçu : {{ row.total_a_recevoir }}</span>
-                      <span>Ops : {{ row.nb_operations }}</span>
-                    </div>
-                  {% empty %}
-                    <div class="subtotal-empty">Aucune donnée.</div>
-                  {% endfor %}
-                </div>
-              </div>
+				<article class="kpi-card">
+				  <div class="kpi-top"><span class="kpi-label">Total payé</span></div>
+				  <div class="kpi-value">{{ transfert_bilan.total_a_payer|default:"0.00" }}</div>
+				</article>
 
-              <div class="table-wrap bilan-table-wrap">
-                <table class="table bilan-table">
-                  <thead>
-                    <tr>
-                      <th>Réf</th>
-                      <th>Date</th>
-                      <th>Expéditeur</th>
-                      <th>Destinataire</th>
-                      <th>Montant envoyé</th>
-                      <th>Frais</th>
-                      <th>Total payé</th>
-                      <th>Taux</th>
-                      <th>Montant reçu</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for t in transfert_bilan_list %}
-                    <tr>
-                      <td>{{ t.reference }}</td>
-                      <td>{{ t.date_transfert }}</td>
-                      <td>{{ t.expediteur_nom }}</td>
-                      <td>{{ t.destinataire_nom }}</td>
-                      <td>{{ t.montant_envoye }} {{ t.devise_envoi }}</td>
-                      <td>{{ t.frais_transfert }} {{ t.devise_envoi }}</td>
-                      <td>{{ t.montant_total_payer }} {{ t.devise_envoi }}</td>
-                      <td>{{ t.taux_transfert }}</td>
-                      <td>{{ t.montant_reception }} {{ t.devise_reception }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr><td colspan="9" class="empty-row">Aucun transfert sur cette période.</td></tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </section>
+				<article class="kpi-card">
+				  <div class="kpi-top"><span class="kpi-label">Sommes reçues</span></div>
+				  <div class="kpi-value">{{ transfert_bilan.total_a_recevoir|default:"0.00" }}</div>
+				</article>
+			  </div>
+
+			  <div class="subtotals-grid">
+				<div class="subtotals-card">
+				  <h4>Sous-totaux envoi</h4>
+				  {% for row in transfert_sous_totaux.envoi %}
+					<div class="subtotal-line">
+					  <strong>{{ row.devise_envoi }}</strong>
+					  <span>Envoyé : {{ row.total_envoye }}</span>
+					  <span>Frais : {{ row.total_frais }}</span>
+					  <span>Total payé : {{ row.total_a_payer }}</span>
+					  <span>Ops : {{ row.nb_operations }}</span>
+					</div>
+				  {% empty %}
+					<div class="subtotal-empty">Aucune donnée.</div>
+				  {% endfor %}
+				</div>
+
+				<div class="subtotals-card">
+				  <h4>Sous-totaux réception</h4>
+				  {% for row in transfert_sous_totaux.reception %}
+					<div class="subtotal-line">
+					  <strong>{{ row.devise_reception }}</strong>
+					  <span>Reçu : {{ row.total_a_recevoir }}</span>
+					  <span>Ops : {{ row.nb_operations }}</span>
+					</div>
+				  {% empty %}
+					<div class="subtotal-empty">Aucune donnée.</div>
+				  {% endfor %}
+				</div>
+			  </div>
+
+			  <div class="table-wrap bilan-table-wrap">
+				<table class="table bilan-table">
+				  <thead>
+					<tr>
+					  <th>Réf</th>
+					  <th>Date</th>
+					  <th>Expéditeur</th>
+					  <th>Destinataire</th>
+					  <th>Montant envoyé</th>
+					  <th>Frais</th>
+					  <th>Total payé</th>
+					  <th>Taux</th>
+					  <th>Montant reçu</th>
+					</tr>
+				  </thead>
+				  <tbody>
+					{% for t in transfert_bilan_list %}
+					<tr>
+					  <td>{{ t.reference }}</td>
+					  <td>{{ t.date_transfert }}</td>
+					  <td>{{ t.expediteur_nom }}</td>
+					  <td>{{ t.destinataire_nom }}</td>
+					  <td>{{ t.montant_envoye }} {{ t.devise_envoi }}</td>
+					  <td>{{ t.frais_transfert }} {{ t.devise_envoi }}</td>
+					  <td>{{ t.montant_total_payer }} {{ t.devise_envoi }}</td>
+					  <td>{{ t.taux_transfert }}</td>
+					  <td>{{ t.montant_reception }} {{ t.devise_reception }}</td>
+					</tr>
+					{% empty %}
+					<tr><td colspan="9" class="empty-row">Aucun transfert sur cette période.</td></tr>
+					{% endfor %}
+				  </tbody>
+				</table>
+			  </div>
+			</div>
+		  </div>
+		</section>
 
         <!-- SMS -->
         <section class="panel" id="panel-sms">
@@ -1371,7 +1402,6 @@
 
       </div>
     </div>
-  </div>
 </section>
 
 <script>

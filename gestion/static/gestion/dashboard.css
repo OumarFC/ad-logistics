@@ -1929,3 +1929,182 @@ label input[disabled] {
   border-radius: 14px;
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
 }
+
+/* =========================
+   LARGEUR DASHBOARD = CONTACT
+========================= */
+
+.dashboard-page{
+  padding: 24px 0;
+}
+
+.dashboard-page__container{
+  width: min(1240px, 96%);
+  margin: 22px auto 40px;
+}
+
+.dashboard-page__container .ad-dashboard{
+  width: 100%;
+}
+
+/* optionnel : garder l'ancien .container de base sans l'impacter */
+.dashboard-page .tabsbar,
+.dashboard-page .filter-card,
+.dashboard-page .panels{
+  width: 100%;
+}
+
+@media (max-width: 680px){
+  .dashboard-page__container{
+    width: min(96%, 96%);
+    margin: 16px auto 28px;
+  }
+}
+
+/* =========================================
+   ENTÊTES BILAN = STYLE HERO CONTACT
+========================================= */
+
+.contact-style-hero{
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 26px 28px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #0a4a78 0%, #082f4e 70%, #0d5c94 100%);
+  box-shadow: 0 18px 40px rgba(0,0,0,.14);
+  margin-bottom: 22px;
+  color: #fff;
+  border: none;
+}
+
+.contact-style-hero::after{
+  content:"";
+  position:absolute;
+  right:-60px;
+  top:-60px;
+  width:220px;
+  height:220px;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+}
+
+.contact-style-hero .bilan-brand{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  position:relative;
+  z-index:1;
+}
+
+.contact-style-logo{
+  width:88px;
+  height:88px;
+  border-radius:20px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  backdrop-filter:blur(5px);
+  flex: 0 0 88px;
+}
+
+.contact-style-logo .bilan-logo{
+  max-width:76px;
+  max-height:76px;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  display:block;
+}
+
+.contact-style-text h2{
+  margin:0 0 6px;
+  font-size:30px;
+  line-height:1.15;
+  font-weight:800;
+  color:#fff;
+}
+
+.contact-style-text p{
+  margin:0;
+  font-size:14px;
+  opacity:.94;
+  color:#fff;
+}
+
+.contact-style-actions{
+  position:relative;
+  z-index:1;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.contact-style-actions .hero-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:12px 16px;
+  border-radius:14px;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  transition:.18s ease;
+  white-space:nowrap;
+  cursor:pointer;
+}
+
+.contact-style-actions .hero-btn:hover{
+  transform:translateY(-1px);
+}
+
+.contact-style-actions .hero-btn.primary{
+  background:#f4a300;
+  color:#111827;
+  border:none;
+}
+
+.contact-style-actions .hero-btn.secondary{
+  background:rgba(255,255,255,.12);
+  color:#fff;
+}
+
+.contact-style-actions .hero-btn i{
+  font-size:16px;
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .contact-style-hero{
+    align-items:flex-start;
+  }
+
+  .contact-style-hero .bilan-brand{
+    width:100%;
+  }
+}
+
+@media (max-width: 680px){
+  .contact-style-text h2{
+    font-size:24px;
+  }
+
+  .contact-style-logo{
+    width:76px;
+    height:76px;
+    flex-basis:76px;
+  }
+
+  .contact-style-logo .bilan-logo{
+    max-width:64px;
+    max-height:64px;
+  }
+}

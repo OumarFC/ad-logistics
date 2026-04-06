@@ -2,7 +2,6 @@ from io import BytesIO
 
 from django.conf import settings
 from django.template.loader import render_to_string
-from weasyprint import HTML
 import json
 from pathlib import Path
 import qrcode
@@ -11,6 +10,11 @@ from .models import ParametreFacture
 import base64
 import mimetypes
 from administration.utils import get_societe_context_data
+import os
+if os.name != "nt":  # PAS Windows
+    from weasyprint import HTML
+else:
+    HTML = None
 
 def build_absolute_media_url(request, path: str) -> str:
     if not path:
@@ -20,6 +24,11 @@ def build_absolute_media_url(request, path: str) -> str:
 def render_facture_pdf_bytes(request, facture):
     societe = get_societe_context_data()
     logo_url = build_logo_data_uri(societe.get("societe_logo", ""))
+    
+    if HTML is None:
+        raise Exception("WeasyPrint non disponible en local Windows")
+
+    return HTML(string=html_string).write_pdf()
 
     if not facture.qr_code_image:
         ensure_facture_qrcode(request, facture, save_model=True)

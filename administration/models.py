@@ -25,47 +25,6 @@ class EntrepriseCliente(models.Model):
         return self.nom
 
 
-class Parametre(models.Model):
-    TYPE_CHOICES = [
-        ("text", "Texte"),
-        ("number", "Nombre"),
-        ("bool", "Oui / Non"),
-        ("email", "Email"),
-        ("phone", "Téléphone"),
-        ("date", "Date"),
-    ]
-
-    entreprise = models.ForeignKey(
-        EntrepriseCliente,
-        on_delete=models.CASCADE,
-        related_name="entreprise",
-        null=True,
-        blank=True,
-    )
-
-    cle = models.CharField(max_length=100)
-    libelle = models.CharField(max_length=150)
-    valeur = models.TextField(blank=True, default="")
-    type_valeur = models.CharField(max_length=20, choices=TYPE_CHOICES, default="text")
-    description = models.TextField(blank=True)
-    ordre = models.PositiveIntegerField(default=0)
-    modifiable = models.BooleanField(default=True)
-    actif = models.BooleanField(default=True)
-
-    date_creation = models.DateTimeField(auto_now_add=True)
-    date_modification = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ["ordre", "libelle"]
-        unique_together = ("entreprise", "cle")
-        verbose_name = "Paramètre"
-        verbose_name_plural = "Paramètres"
-
-    def __str__(self):
-        cible = self.entreprise.nom if self.entreprise else "Global"
-        return f"{cible} - {self.libelle}: {self.valeur}"
-
-
 class Agence(models.Model):
     TYPE_CHOICES = [
         ("PRINCIPALE", "Principale"),
