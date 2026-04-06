@@ -1,0 +1,108 @@
+{% extends "administration/base_admin.html" %}
+{% block title %}Rapport connexions{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Rapport connexions</h2>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2">
+            <div class="col-md-3">
+                <select name="entreprise" class="form-select">
+                    <option value="">Toutes les entreprises</option>
+                    {% for ent in entreprises %}
+                        <option value="{{ ent.id }}" {% if entreprise_id == ent.id|stringformat:"s" %}selected{% endif %}>
+                            {{ ent.nom }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <select name="statut" class="form-select">
+                    <option value="">Tous les statuts</option>
+                    <option value="CONNECTE" {% if statut_selected == "CONNECTE" %}selected{% endif %}>Connecté</option>
+                    <option value="DECONNECTE" {% if statut_selected == "DECONNECTE" %}selected{% endif %}>Déconnecté</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <input type="text" name="q" value="{{ q }}" class="form-control"
+                       placeholder="Rechercher par agent, IP, agence, entreprise...">
+            </div>
+
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-outline-primary">Filtrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Connexion</th>
+                        <th>Déconnexion</th>
+                        <th>Agent</th>
+                        <th>Entreprise</th>
+                        <th>Agence</th>
+                        <th>IP</th>
+                        <th>Statut</th>
+                        <th>Durée</th>
+                        <th>Navigateur / appareil</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in connexions %}
+                    <tr>
+                        <td>{{ c.date_connexion|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% if c.date_deconnexion %}
+                                {{ c.date_deconnexion|date:"d/m/Y H:i" }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>{{ c.username_snapshot|default:"-" }}</strong><br>
+                            <small class="text-muted">{{ c.nom_complet_snapshot|default:"" }}</small>
+                        </td>
+                        <td>{{ c.entreprise.nom|default:"-" }}</td>
+                        <td>{{ c.agence.nom|default:"-" }}</td>
+                        <td>{{ c.ip_address|default:"-" }}</td>
+                        <td>
+                            {% if c.statut == "CONNECTE" %}
+                                <span class="badge bg-success">Connecté</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Déconnecté</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if c.duree_session %}
+                                {{ c.duree_session }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td style="max-width: 280px; white-space: normal;">
+                            {{ c.user_agent|default:"-" }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">
+                            Aucun rapport de connexion trouvé.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

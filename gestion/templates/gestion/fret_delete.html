@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Supprimer Fret {{ obj.reference }}{% endblock %}
+{% block content %}
+<div class="section container">
+  <h1>Supprimer Fret {{ obj.reference }}</h1>
+  <p>Confirmer la suppression ?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn">Oui, supprimer</button>
+    <a class="btn ghost" href="/app/#recu">Annuler</a>
+  </form>
+</div>
+{% endblock %}

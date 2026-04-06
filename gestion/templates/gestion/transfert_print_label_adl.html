@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Ticket transfert {{ obj.reference }}</title>
+
+<style>
+  @page {
+    size: 210mm 118mm;
+    margin: 0;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #e9e9e9;
+    font-family: "Times New Roman", Georgia, serif;
+  }
+
+  .print-btn {
+    display: block;
+    margin: 12px auto;
+    padding: 10px 18px;
+    background: #0d6efd;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .ticket {
+    width: 210mm;
+    min-height: 118mm;
+    margin: 10px auto;
+    background: #f2f2f2;
+    border: 1px solid #555;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+.top-bar {
+  background: #1f1f1f;
+  color: #fff;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 7mm;
+  letter-spacing: 3.2mm;
+  padding: 3mm 0 2.5mm;
+  text-transform: uppercase;
+
+  /* force l'impression du fond */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+  .content {
+    padding: 6mm 12mm 8mm;
+  }
+
+  .header-grid {
+    display: grid;
+    grid-template-columns: 42mm 1fr 36mm;
+    gap: 8mm;
+    align-items: center;
+    margin-bottom: 6mm;
+  }
+
+  .logo-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30mm;
+  }
+
+  .logo-text {
+    font-size: 20mm;
+    font-weight: 700;
+    color: #333;
+    letter-spacing: 1mm;
+  }
+
+  .company-box {
+    color: #2e2e2e;
+    line-height: 1.15;
+  }
+
+  .company-name {
+    font-size: 7mm;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .company-address {
+    font-size: 6mm;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .company-phone {
+    margin-top: 2mm;
+    font-size: 4.7mm;
+    font-weight: 700;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .header-qr {
+    text-align: center;
+  }
+
+  .header-qr img {
+    width: 29mm;
+    height: 29mm;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .header-qr-code {
+    margin-top: 1mm;
+    font-size: 3.8mm;
+    color: #333;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  table.ticket-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .ticket-table th,
+  .ticket-table td {
+    border: 1px solid #666;
+    padding: 0;
+    vertical-align: top;
+  }
+
+  .ticket-table th {
+    text-align: center;
+    font-size: 5.2mm;
+    font-weight: 700;
+    color: #394b63;
+    padding: 1.2mm 1mm;
+    text-transform: uppercase;
+    background: transparent;
+  }
+
+  .cell-date {
+    width: 36mm;
+    padding: 3mm 2mm;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 5mm;
+    font-weight: 700;
+    line-height: 1.35;
+    color: #000;
+  }
+
+  .cell-destinataire {
+    padding: 3mm 2.5mm;
+    font-size: 8.8mm;
+    font-weight: 700;
+    color: #111;
+    text-transform: uppercase;
+    line-height: 1.1;
+    word-break: break-word;
+  }
+
+  .cell-expediteur {
+    padding: 3mm 2.5mm;
+    font-size: 7.4mm;
+    font-weight: 700;
+    color: #111;
+    text-transform: uppercase;
+    line-height: 1.12;
+    word-break: break-word;
+  }
+
+  .small-sub {
+    display: block;
+    margin-top: 2mm;
+    font-size: 4mm;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    color: #444;
+    text-transform: none;
+    line-height: 1.2;
+  }
+
+  .bottom-block {
+    height: 30mm;
+  }
+
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 22mm 1fr 42mm;
+    align-items: center;
+    height: 100%;
+  }
+
+  .bottom-left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .bottom-left img {
+    width: 16mm;
+    height: 16mm;
+    object-fit: contain;
+  }
+
+  .bottom-center {
+    padding: 2mm 2mm 1mm 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .main-reference {
+    font-size: 18mm;
+    font-weight: 800;
+    color: #222;
+    line-height: 0.95;
+    letter-spacing: .3mm;
+  }
+
+  .sub-ref {
+    margin-top: 2mm;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 4.9mm;
+    color: #334d6e;
+    text-transform: uppercase;
+  }
+
+  .bottom-right {
+    padding: 1.5mm 2mm 1mm 1mm;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .status-code {
+    font-size: 12mm;
+    font-style: italic;
+    font-weight: 700;
+    color: #666;
+    line-height: 1;
+  }
+
+  .status-label {
+    margin-top: 2.5mm;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 4.4mm;
+    color: #333;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+
+  .status-badge {
+    display: inline-block;
+    margin-top: 1.5mm;
+    padding: 1mm 2mm;
+    border: 1px solid #666;
+    font-size: 3.5mm;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    border-radius: 2mm;
+    background: #fff;
+  }
+
+  .finance-row {
+    margin-top: 4mm;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2mm;
+  }
+
+  .finance-box {
+    border: 1px solid #666;
+    background: #fafafa;
+    min-height: 17mm;
+    padding: 2mm 2.5mm;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  .finance-title {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 3.8mm;
+    font-weight: 700;
+    color: #394b63;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+
+  .finance-value {
+    margin-top: 1.8mm;
+    font-size: 5mm;
+    font-weight: 700;
+    color: #111;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+@media print {
+  @page {
+    size: 210mm 118mm;
+    margin: 0;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    width: 210mm;
+    height: 118mm;
+    overflow: visible !important;
+
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .print-btn {
+    display: none !important;
+  }
+
+  .ticket {
+    width: 210mm !important;
+    min-height: 118mm !important;
+    margin: 0 !important;
+    border: none !important;
+    background: #f2f2f2 !important;
+    overflow: visible !important;
+
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .top-bar {
+    display: block !important;
+    visibility: visible !important;
+    background: #1f1f1f !important;
+    color: #ffffff !important;
+
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .ticket-table th {
+    color: #394b63 !important;
+  }
+
+  .finance-box {
+    background: #fafafa !important;
+
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+</style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">Imprimer</button>
+
+<div class="ticket">
+  <div class="top-bar">AD LOGISTICS &amp; SERVICES</div>
+
+  <div class="content">
+    <div class="header-grid">
+      <div class="logo-box">
+        <div class="logo-text">ADL</div>
+      </div>
+
+      <div class="company-box">
+        <div class="company-name">AD LOGISTICS &amp; SERVICES</div>
+        <div class="company-address">23 RUE SIMART</div>
+        <div class="company-address">75018 PARIS</div>
+        <div class="company-phone">Phone: 06 02 04 53 29 - 07 75 72 93 22</div>
+      </div>
+
+      <div class="header-qr">
+        <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR code">
+        <div class="header-qr-code">{{ obj.reference }}</div>
+      </div>
+    </div>
+
+    <table class="ticket-table">
+      <tr>
+        <th style="width:36mm;">DATE</th>
+        <th>DESTINATAIRE</th>
+        <th style="width:64mm;">EXPEDITEUR</th>
+      </tr>
+
+      <tr style="height:26mm;">
+        <td class="cell-date">
+          {{ obj.date_transfert|date:"Y-m-d" }}<br>
+          {{ obj.created_at|time:"H:i:s" }}
+        </td>
+
+        <td class="cell-destinataire">
+          {{ obj.destinataire_nom|default:"-" }}
+          {% if obj.destinataire_tel %}
+            <span class="small-sub">{{ obj.destinataire_tel }}</span>
+          {% endif %}
+        </td>
+
+        <td class="cell-expediteur">
+          {{ obj.expediteur_nom|default:"-" }}
+          {% if obj.expediteur_tel %}
+            <span class="small-sub">{{ obj.expediteur_tel }}</span>
+          {% endif %}
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3" class="bottom-block">
+          <div class="bottom-grid">
+            <div class="bottom-left">
+              <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR code mini">
+            </div>
+
+            <div class="bottom-center">
+              <div class="main-reference">{{ obj.reference }}</div>
+              <div class="sub-ref">TRANSFERT</div>
+            </div>
+
+            <div class="bottom-right">
+              <div class="status-code">
+                {% if obj.statut == "ATT" %}
+                  A/V
+                {% elif obj.statut == "OK" %}
+                  ENC
+                {% elif obj.statut == "PAYE" %}
+                  PAYE
+                {% elif obj.statut == "ANN" %}
+                  ANN
+                {% else %}
+                  ---
+                {% endif %}
+              </div>
+
+              <div class="status-label">{{ obj.get_statut_display }}</div>
+
+              {% if obj.agent_nom %}
+                <div class="status-badge">{{ obj.agent_nom }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <div class="finance-row">
+      <div class="finance-box">
+        <div class="finance-title">Montant envoyé</div>
+        <div class="finance-value">{{ obj.montant_envoye }} {{ obj.devise_envoi }}</div>
+      </div>
+
+      <div class="finance-box">
+        <div class="finance-title">Total payé</div>
+        <div class="finance-value">{{ obj.montant_total_payer }} {{ obj.devise_envoi }}</div>
+      </div>
+
+      <div class="finance-box">
+        <div class="finance-title">Taux transfert</div>
+        <div class="finance-value">{{ obj.taux_transfert }}</div>
+      </div>
+
+      <div class="finance-box">
+        <div class="finance-title">Montant à recevoir</div>
+        <div class="finance-value">{{ obj.montant_reception }} {{ obj.devise_reception }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

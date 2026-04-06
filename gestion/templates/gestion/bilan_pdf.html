@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Bilan AD Logistics</title>
+  <style>
+    @page { size: A4 portrait; margin: 12mm; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #111827;
+      font-size: 12px;
+    }
+
+    .pdf-header {
+      display: table;
+      width: 100%;
+      margin-bottom: 18px;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 12px;
+    }
+
+    .pdf-header-left, .pdf-header-right {
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    .pdf-header-right {
+      text-align: right;
+    }
+
+    .logo {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 24px;
+    }
+
+    .muted {
+      color: #475569;
+      font-size: 12px;
+    }
+
+    .section {
+      margin-top: 20px;
+      page-break-inside: avoid;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      padding: 8px 10px;
+      color: white;
+    }
+
+    .theme-fret { background: #0f766e; }
+    .theme-transfert { background: #7c3aed; }
+
+    .kpis {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+    }
+
+    .kpis td {
+      border: 1px solid #d1d5db;
+      padding: 10px;
+      width: 20%;
+      vertical-align: top;
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      color: #64748b;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    table.data {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table.data th, table.data td {
+      border: 1px solid #d1d5db;
+      padding: 7px;
+      font-size: 11px;
+      text-align: left;
+    }
+
+    table.data th {
+      background: #f3f4f6;
+    }
+
+    .subtotals {
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+
+    .subtotals-box {
+      border: 1px solid #d1d5db;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .subtotals-box h4 {
+      margin: 0 0 8px;
+      font-size: 13px;
+    }
+
+    .sub-line {
+      padding: 4px 0;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .sub-line:first-child {
+      border-top: none;
+    }
+
+    .footer-sign {
+      margin-top: 24px;
+      display: table;
+      width: 100%;
+    }
+
+    .footer-sign-left, .footer-sign-right {
+      display: table-cell;
+      vertical-align: bottom;
+    }
+
+    .footer-sign-right {
+      text-align: right;
+    }
+
+    .sign-line {
+      margin-top: 40px;
+      width: 220px;
+      border-bottom: 1px solid #111827;
+    }
+
+    .stamp {
+      display: inline-block;
+      width: 90px;
+      height: 90px;
+      border: 3px solid #dc2626;
+      color: #dc2626;
+      border-radius: 999px;
+      text-align: center;
+      font-weight: bold;
+      line-height: 1.2;
+      padding-top: 18px;
+      transform: rotate(-10deg);
+    }
+  </style>
+</head>
+<body>
+  <div class="pdf-header">
+    <div class="pdf-header-left">
+      <img src="{{ logo_url }}" alt="Logo" class="logo">
+    </div>
+    <div class="pdf-header-right">
+      <h1>Bilan AD Logistics</h1>
+      <div class="muted">
+        {% if bilan_du %}Du {{ bilan_du }}{% endif %}
+        {% if bilan_au %} au {{ bilan_au }}{% endif %}
+      </div>
+      <div class="muted">Édité le {{ print_date|date:"Y-m-d H:i" }}</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title theme-fret">Bilan Fret / Colis</div>
+
+    <table class="kpis">
+      <tr>
+        <td><div class="kpi-label">Opérations</div><div class="kpi-value">{{ fret_bilan.nb_operations }}</div></td>
+        <td><div class="kpi-label">Total fret</div><div class="kpi-value">{{ fret_bilan.total_prix_fret }} €</div></td>
+        <td><div class="kpi-label">Total restant</div><div class="kpi-value">{{ fret_bilan.total_restant }} €</div></td>
+        <td><div class="kpi-label">Poids total</div><div class="kpi-value">{{ fret_bilan.total_poids }} kg</div></td>
+        <td><div class="kpi-label">Nb colis</div><div class="kpi-value">{{ fret_bilan.total_nb_colis }}</div></td>
+      </tr>
+    </table>
+
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Réf</th><th>Date</th><th>Expéditeur</th><th>Destinataire</th>
+          <th>Prix fret</th><th>Restant</th><th>Poids</th><th>Nb colis</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in fret_bilan_list %}
+        <tr>
+          <td>{{ c.reference }}</td>
+          <td>{{ c.date_enregistrement }}</td>
+          <td>{{ c.expediteur_nom }}</td>
+          <td>{{ c.destinataire_nom }}</td>
+          <td>{{ c.prix_fret_euros }} €</td>
+          <td>{{ c.restant_euros }} €</td>
+          <td>{{ c.poids_kg }} kg</td>
+          <td>{{ c.nb_colis_total }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">Aucune donnée.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title theme-transfert">Bilan Transfert d’argent</div>
+
+    <table class="kpis">
+      <tr>
+        <td><div class="kpi-label">Opérations</div><div class="kpi-value">{{ transfert_bilan.nb_operations }}</div></td>
+        <td><div class="kpi-label">Sommes envoyées</div><div class="kpi-value">{{ transfert_bilan.total_envoye }}</div></td>
+        <td><div class="kpi-label">Frais</div><div class="kpi-value">{{ transfert_bilan.total_frais }}</div></td>
+        <td><div class="kpi-label">Total payé</div><div class="kpi-value">{{ transfert_bilan.total_a_payer }}</div></td>
+        <td><div class="kpi-label">Sommes reçues</div><div class="kpi-value">{{ transfert_bilan.total_a_recevoir }}</div></td>
+      </tr>
+    </table>
+
+    <div class="subtotals">
+      <div class="subtotals-box">
+        <h4>Sous-totaux envoi</h4>
+        {% for row in transfert_sous_totaux.envoi %}
+          <div class="sub-line">
+            <strong>{{ row.devise_envoi }}</strong> —
+            Envoyé : {{ row.total_envoye }} |
+            Frais : {{ row.total_frais }} |
+            Total payé : {{ row.total_a_payer }} |
+            Ops : {{ row.nb_operations }}
+          </div>
+        {% empty %}
+          <div class="sub-line">Aucune donnée.</div>
+        {% endfor %}
+      </div>
+
+      <div class="subtotals-box">
+        <h4>Sous-totaux réception</h4>
+        {% for row in transfert_sous_totaux.reception %}
+          <div class="sub-line">
+            <strong>{{ row.devise_reception }}</strong> —
+            Reçu : {{ row.total_a_recevoir }} |
+            Ops : {{ row.nb_operations }}
+          </div>
+        {% empty %}
+          <div class="sub-line">Aucune donnée.</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Réf</th><th>Date</th><th>Expéditeur</th><th>Destinataire</th>
+          <th>Montant envoyé</th><th>Frais</th><th>Total payé</th><th>Taux</th><th>Montant reçu</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in transfert_bilan_list %}
+        <tr>
+          <td>{{ t.reference }}</td>
+          <td>{{ t.date_transfert }}</td>
+          <td>{{ t.expediteur_nom }}</td>
+          <td>{{ t.destinataire_nom }}</td>
+          <td>{{ t.montant_envoye }} {{ t.devise_envoi }}</td>
+          <td>{{ t.frais_transfert }} {{ t.devise_envoi }}</td>
+          <td>{{ t.montant_total_payer }} {{ t.devise_envoi }}</td>
+          <td>{{ t.taux_transfert }}</td>
+          <td>{{ t.montant_reception }} {{ t.devise_reception }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9">Aucune donnée.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer-sign">
+    <div class="footer-sign-left">
+      <div>Signature</div>
+      <div class="sign-line"></div>
+      <div>{{ signature_nom }} — {{ signature_role }}</div>
+    </div>
+    <div class="footer-sign-right">
+      <div class="stamp">ADL<br>VALIDÉ</div>
+    </div>
+  </div>
+</body>
+</html>

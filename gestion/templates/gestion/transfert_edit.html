@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Modifier transfert {{ obj.reference }} | AD Logistics{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'gestion/transfert_edit.css' %}">
+
+<section class="section">
+  <div class="container">
+    <div class="edit-page">
+
+      <div class="edit-head">
+        <div>
+          <h1>Modifier le transfert</h1>
+          <p class="muted">
+            Référence : <strong>{{ obj.reference }}</strong>
+          </p>
+        </div>
+
+        <div class="edit-head-actions">
+          <a href="{% url 'dashboard' %}#envoye" class="btn ghost">Retour</a>
+          <a href="{% url 'transfert_print' obj.id %}" class="btn" target="_blank">Imprimer</a>
+        </div>
+      </div>
+
+      {% if messages %}
+        <div class="messages-wrap">
+          {% for message in messages %}
+            <div class="msg {{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if form.errors %}
+        <div class="form-errors">
+          <strong>Veuillez corriger les erreurs ci-dessous.</strong>
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <form method="post" class="edit-card">
+        {% csrf_token %}
+
+        <div class="edit-grid">
+
+          <div class="form-section span-3">
+            <h3>Informations générales</h3>
+          </div>
+
+          <label>
+            Référence
+            <input type="text" value="{{ obj.reference }}" disabled>
+          </label>
+
+          <label>
+            Statut
+            {{ form.statut }}
+            {{ form.statut.errors }}
+          </label>
+
+          <label>
+            Nom de l’agent
+            {{ form.agent_nom }}
+            {{ form.agent_nom.errors }}
+          </label>
+
+          <div class="form-section span-3">
+            <h3>Expéditeur / Destinataire</h3>
+          </div>
+
+          <label>
+            Expéditeur
+            {{ form.expediteur_nom }}
+            {{ form.expediteur_nom.errors }}
+          </label>
+
+          <label>
+            Tél. expéditeur
+            {{ form.expediteur_tel }}
+            {{ form.expediteur_tel.errors }}
+          </label>
+
+          <label>
+            Destinataire
+            {{ form.destinataire_nom }}
+            {{ form.destinataire_nom.errors }}
+          </label>
+
+          <label>
+            Tél. destinataire
+            {{ form.destinataire_tel }}
+            {{ form.destinataire_tel.errors }}
+          </label>
+
+          <div class="form-section span-3">
+            <h3>Détails financiers</h3>
+          </div>
+
+          <label>
+            Monnaie d’envoi
+            {{ form.devise_envoi }}
+            {{ form.devise_envoi.errors }}
+          </label>
+
+          <label>
+            Somme envoyée
+            {{ form.montant_envoye }}
+            {{ form.montant_envoye.errors }}
+          </label>
+
+          <label>
+            Taux de transfert
+            {{ form.taux_transfert }}
+            {{ form.taux_transfert.errors }}
+          </label>
+
+          <label>
+            Monnaie de retrait
+            {{ form.devise_reception }}
+            {{ form.devise_reception.errors }}
+          </label>
+
+          <label>
+            Total à payer
+            {{ form.montant_total_payer }}
+            {{ form.montant_total_payer.errors }}
+          </label>
+
+          <label>
+            Montant à recevoir
+            {{ form.montant_reception }}
+            {{ form.montant_reception.errors }}
+          </label>
+
+          <label>
+            Date transfert
+            {{ form.date_transfert }}
+            {{ form.date_transfert.errors }}
+          </label>
+
+          <label>
+            Date retrait
+            {{ form.date_retrait }}
+            {{ form.date_retrait.errors }}
+          </label>
+
+          <label class="span-3">
+            Description
+            {{ form.description }}
+            {{ form.description.errors }}
+          </label>
+
+          <div class="form-section span-3">
+            <h3>Aperçu automatique</h3>
+          </div>
+
+          <div class="preview-grid span-3">
+            <div class="preview-card">
+              <div class="preview-label">Montant envoyé</div>
+              <div id="preview_montant_envoye" class="preview-value">0.00</div>
+              <div id="preview_devise_envoi" class="preview-sub">{{ obj.devise_envoi }}</div>
+            </div>
+
+            <div class="preview-card">
+              <div class="preview-label">Total à payer</div>
+              <div id="preview_total" class="preview-value">0.00</div>
+              <div id="preview_total_devise" class="preview-sub">{{ obj.devise_envoi }}</div>
+            </div>
+
+            <div class="preview-card">
+              <div class="preview-label">Taux transfert</div>
+              <div id="preview_taux" class="preview-value">0.00</div>
+              <div class="preview-sub">Taux appliqué</div>
+            </div>
+
+            <div class="preview-card">
+              <div class="preview-label">Montant à recevoir</div>
+              <div id="preview_reception" class="preview-value">0.00</div>
+              <div id="preview_devise_reception" class="preview-sub">{{ obj.devise_reception }}</div>
+            </div>
+          </div>
+
+          <div class="rule-box span-3">
+            <strong>Règle de frais appliquée :</strong>
+            <span id="preview_regle">Aucune</span>
+          </div>
+
+          <div class="form-actions span-3">
+            <button class="btn" type="submit">Enregistrer les modifications</button>
+            <a class="btn ghost" href="{% url 'dashboard' %}#envoye">Annuler</a>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const montantInput = document.getElementById('id_montant_envoye');
+  const tauxInput = document.getElementById('id_taux_transfert');
+  const deviseEnvoiInput = document.getElementById('id_devise_envoi');
+  const deviseReceptionInput = document.getElementById('id_devise_reception');
+  const totalInput = document.getElementById('id_montant_total_payer');
+  const receptionInput = document.getElementById('id_montant_reception');
+
+  const previewMontant = document.getElementById('preview_montant_envoye');
+  const previewDeviseEnvoi = document.getElementById('preview_devise_envoi');
+  const previewTotal = document.getElementById('preview_total');
+  const previewTotalDevise = document.getElementById('preview_total_devise');
+  const previewTaux = document.getElementById('preview_taux');
+  const previewReception = document.getElementById('preview_reception');
+  const previewDeviseReception = document.getElementById('preview_devise_reception');
+  const previewRegle = document.getElementById('preview_regle');
+
+  function toNumber(value) {
+    if (!value) return 0;
+    value = String(value).replace(',', '.');
+    const n = parseFloat(value);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function formatNumber(value) {
+    return new Intl.NumberFormat('fr-FR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(value);
+  }
+
+  function getFraisRate(montant) {
+    if (montant >= 1 && montant <= 999) return 4;
+    if (montant >= 1000) return 3;
+    return 0;
+  }
+
+  function computeReception(montant, taux, deviseEnvoi, deviseReception) {
+    if (montant <= 0 || taux <= 0) return 0;
+
+    if (deviseEnvoi === 'EUR' && deviseReception === 'GNF') {
+      return montant * taux;
+    }
+
+    if (deviseEnvoi === 'GNF' && deviseReception === 'EUR') {
+      return montant / taux;
+    }
+
+    return montant;
+  }
+
+  function updatePreview() {
+    if (!montantInput || !tauxInput || !deviseEnvoiInput || !deviseReceptionInput) return;
+
+    const montant = toNumber(montantInput.value);
+    const taux = toNumber(tauxInput.value);
+    const deviseEnvoi = deviseEnvoiInput.value || 'EUR';
+    const deviseReception = deviseReceptionInput.value || 'GNF';
+
+    const fraisRate = getFraisRate(montant);
+    const frais = montant * fraisRate / 100;
+    const total = montant + frais;
+    const reception = computeReception(montant, taux, deviseEnvoi, deviseReception);
+
+    if (totalInput) totalInput.value = total.toFixed(2);
+    if (receptionInput) receptionInput.value = reception.toFixed(2);
+
+    if (previewMontant) previewMontant.textContent = formatNumber(montant);
+    if (previewDeviseEnvoi) previewDeviseEnvoi.textContent = deviseEnvoi;
+    if (previewTotal) previewTotal.textContent = formatNumber(total);
+    if (previewTotalDevise) previewTotalDevise.textContent = deviseEnvoi;
+    if (previewTaux) previewTaux.textContent = formatNumber(taux);
+    if (previewReception) previewReception.textContent = formatNumber(reception);
+    if (previewDeviseReception) previewDeviseReception.textContent = deviseReception;
+
+    if (previewRegle) {
+      if (fraisRate === 4) {
+        previewRegle.textContent = 'Montant entre 1 € et 999 € → frais 4%';
+      } else if (fraisRate === 3) {
+        previewRegle.textContent = 'Montant à partir de 1000 € → frais 3%';
+      } else {
+        previewRegle.textContent = 'Aucune';
+      }
+    }
+  }
+
+  [montantInput, tauxInput, deviseEnvoiInput, deviseReceptionInput].forEach(function (el) {
+    if (!el) return;
+    el.addEventListener('input', updatePreview);
+    el.addEventListener('change', updatePreview);
+  });
+
+  updatePreview();
+});
+</script>
+{% endblock %}

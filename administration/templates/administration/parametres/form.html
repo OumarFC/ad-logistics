@@ -1,0 +1,136 @@
+{% extends "administration/base_admin.html" %}
+{% block title %}{{ titre_page }}{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">{{ titre_page }}</h2>
+            <a href="{% url 'admin_liste_parametres' %}" class="btn btn-secondary">
+                Retour
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+					
+					    {% if form.non_field_errors %}
+							<div class="alert alert-danger">
+								{{ form.non_field_errors }}
+							</div>
+						{% endif %}
+
+						{% if form.errors %}
+							<div class="alert alert-warning">
+								<strong>Merci de corriger les erreurs du formulaire.</strong>
+							</div>
+						{% endif %}
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Entreprise cliente</label>
+                            {{ form.entreprise }}
+                            {% if form.entreprise.errors %}
+                                <div class="text-danger small mt-1">{{ form.entreprise.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Catégorie</label>
+                            {{ form.categorie }}
+                            {% if form.categorie.errors %}
+                                <div class="text-danger small mt-1">{{ form.categorie.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Clé technique</label>
+                            {{ form.cle }}
+                            {% if form.cle.errors %}
+                                <div class="text-danger small mt-1">{{ form.cle.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Libellé</label>
+                            {{ form.libelle }}
+                            {% if form.libelle.errors %}
+                                <div class="text-danger small mt-1">{{ form.libelle.errors }}</div>
+                            {% endif %}
+                        </div>
+						
+						<div class="col-12">
+							<label class="form-label">Fichier / image</label>
+							{{ form.fichier }}
+							{% if form.fichier.errors %}
+								<div class="text-danger small mt-1">{{ form.fichier.errors }}</div>
+							{% endif %}
+						</div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Type de valeur</label>
+                            {{ form.type_valeur }}
+                            {% if form.type_valeur.errors %}
+                                <div class="text-danger small mt-1">{{ form.type_valeur.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Ordre</label>
+                            {{ form.ordre }}
+                            {% if form.ordre.errors %}
+                                <div class="text-danger small mt-1">{{ form.ordre.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Valeur</label>
+                            {{ form.valeur }}
+                            {% if form.valeur.errors %}
+                                <div class="text-danger small mt-1">{{ form.valeur.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Description</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-check mt-2">
+                                {{ form.modifiable }}
+                                <label class="form-check-label" for="{{ form.modifiable.id_for_label }}">
+                                    Paramètre modifiable
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-check mt-2">
+                                {{ form.actif }}
+                                <label class="form-check-label" for="{{ form.actif.id_for_label }}">
+                                    Paramètre actif
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{% url 'admin_liste_parametres' %}" class="btn btn-light border">
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Envoyer SMS | AD Logistics{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'gestion/dashboard.css' %}">
+
+<div class="section container">
+
+    <h2 class="panel-title">Liste des SMS à envoyer</h2>
+
+    <button class="btn" style="margin-bottom:10px;" onclick="toggleForm()">
+        ➕ Ajouter un message
+    </button>
+
+    <div id="form-sms" class="capsule-body" hidden>
+        <form method="POST" class="form-grid">
+            {% csrf_token %}
+            <label>Titre du SMS {{ form.titre }}</label>
+            <label>Message {{ form.message }}</label>
+            <label>Liste téléphone {{ form.liste_telephones }}</label>
+
+            <div class="form-actions">
+                <button class="btn">Enregistrer</button>
+                <button type="button" class="btn ghost" onclick="toggleForm()">Fermer</button>
+            </div>
+        </form>
+    </div>
+
+    <table class="table" style="margin-top:20px;">
+        <thead>
+            <tr>
+                <th>TITRE DU SMS</th>
+                <th>MESSAGE</th>
+                <th>LISTE TÉLÉPHONE</th>
+                <th>ACTION</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for sms in sms_list %}
+            <tr>
+                <td>{{ sms.titre }}</td>
+                <td>{{ sms.message }}</td>
+                <td>{{ sms.liste_telephones }}</td>
+                <td>
+                    <a href="{% url 'sms_delete' sms.id %}" class="icon delete" title="Supprimer"></a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="4">Aucun SMS enregistré.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function toggleForm() {
+    const form = document.getElementById("form-sms");
+    form.hidden = !form.hidden;
+}
+</script>
+
+{% endblock %}

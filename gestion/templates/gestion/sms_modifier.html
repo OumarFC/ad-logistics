@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Modifier SMS{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <h3 class="mb-4">Modifier et renvoyer le SMS</h3>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label">{{ form.numero.label }}</label>
+          {{ form.numero }}
+          {% for error in form.numero.errors %}
+            <div class="text-danger small">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">{{ form.message.label }}</label>
+          {{ form.message }}
+          {% for error in form.message.errors %}
+            <div class="text-danger small">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Enregistrer et renvoyer</button>
+          <a href="/app/#sms" class="btn btn-outline-secondary">Annuler</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

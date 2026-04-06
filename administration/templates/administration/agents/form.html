@@ -1,0 +1,206 @@
+{% extends "administration/base_admin.html" %}
+{% block title %}{{ titre_page }}{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">{{ titre_page }}</h2>
+            <a href="{% url 'admin_liste_agents' %}" class="btn btn-secondary">
+                Retour
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+                        {% if mode == "create" %}
+                        <div class="col-md-6">
+                            <label class="form-label">Nom d'utilisateur</label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="col-md-6">
+                            <label class="form-label">Nom d'utilisateur</label>
+                            <input type="text" class="form-control" value="{{ profil.user.username }}" disabled>
+                        </div>
+                        {% endif %}
+
+                        <div class="col-md-6">
+                            <label class="form-label">Entreprise cliente</label>
+                            {{ form.entreprise }}
+                            {% if form.entreprise.errors %}
+                                <div class="text-danger small mt-1">{{ form.entreprise.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Agence</label>
+                            {{ form.agence }}
+                            {% if form.agence.errors %}
+                                <div class="text-danger small mt-1">{{ form.agence.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Rôle</label>
+                            {{ form.role }}
+                            {% if form.role.errors %}
+                                <div class="text-danger small mt-1">{{ form.role.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Prénom</label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="text-danger small mt-1">{{ form.first_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Nom</label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="text-danger small mt-1">{{ form.last_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Téléphone</label>
+                            {{ form.telephone }}
+                            {% if form.telephone.errors %}
+                                <div class="text-danger small mt-1">{{ form.telephone.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        {% if mode == "create" %}
+                        <div class="col-md-6">
+                            <label class="form-label">Mot de passe</label>
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                                <div class="text-danger small mt-1">{{ form.password.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Confirmer le mot de passe</label>
+                            {{ form.password_confirm }}
+                            {% if form.password_confirm.errors %}
+                                <div class="text-danger small mt-1">{{ form.password_confirm.errors }}</div>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="col-md-6">
+                            <label class="form-label">Nouveau mot de passe</label>
+                            {{ form.new_password }}
+                            {% if form.new_password.errors %}
+                                <div class="text-danger small mt-1">{{ form.new_password.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Confirmer le nouveau mot de passe</label>
+                            {{ form.new_password_confirm }}
+                            {% if form.new_password_confirm.errors %}
+                                <div class="text-danger small mt-1">{{ form.new_password_confirm.errors }}</div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <div class="col-12 mt-3">
+                            <h5 class="mb-3">Permissions</h5>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                {{ form.peut_gerer_agences }}
+                                <label class="form-check-label" for="{{ form.peut_gerer_agences.id_for_label }}">
+                                    Gérer les agences
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                {{ form.peut_gerer_agents }}
+                                <label class="form-check-label" for="{{ form.peut_gerer_agents.id_for_label }}">
+                                    Gérer les agents
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                {{ form.peut_gerer_parametres }}
+                                <label class="form-check-label" for="{{ form.peut_gerer_parametres.id_for_label }}">
+                                    Gérer les paramètres
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                {{ form.peut_gerer_sms }}
+                                <label class="form-check-label" for="{{ form.peut_gerer_sms.id_for_label }}">
+                                    Gérer les SMS
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                {{ form.peut_voir_factures }}
+                                <label class="form-check-label" for="{{ form.peut_voir_factures.id_for_label }}">
+                                    Voir les factures
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                {{ form.peut_voir_rapports }}
+                                <label class="form-check-label" for="{{ form.peut_voir_rapports.id_for_label }}">
+                                    Voir les rapports
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-2">
+                            <div class="form-check">
+                                {{ form.actif }}
+                                <label class="form-check-label" for="{{ form.actif.id_for_label }}">
+                                    Agent actif
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{% url 'admin_liste_agents' %}" class="btn btn-light border">
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

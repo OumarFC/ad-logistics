@@ -1,0 +1,1692 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Tableau de bord | AD Logistics{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'gestion/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="ad-dashboard">
+
+      {% if messages %}
+        <div class="messages-wrap">
+          {% for message in messages %}
+            <div class="msg {% if message.tags == 'error' %}error{% else %}success{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Onglets -->
+      <div class="tabsbar">
+        <button class="tab active" data-tab="recu" type="button">Fret</button>
+        <button class="tab" data-tab="envoye" type="button">Colis</button>
+        <button class="tab" data-tab="facture" type="button">Nouvelles facture</button>
+       <!-- <button class="tab" data-tab="devis" type="button">Devis</button>-->
+        <button class="tab" data-tab="bilans" type="button">Bilans</button>
+        <button class="tab" data-tab="sms" type="button">Envoyer SMS</button>
+		 <button class="tab" data-tab="recherche" type="button">Rechercher colis</button>
+		<!--<button class="tab" data-tab="conf" type="button">Confectionnement</button>
+        <button class="tab" data-tab="produits" type="button">Produits</button>-->
+      </div>
+
+      <!-- Filtre global -->
+      <div class="filter-card">
+        <h3>Filtrer par :</h3>
+        <form class="filters" method="get" action="/app/#recherche">
+          <label>Nom / Prénom<input type="text" name="nom" value="{{ request.GET.nom }}"></label>
+          <label>Téléphone<input type="text" name="tel" value="{{ request.GET.tel }}"></label>
+          <label>Référence colis<input type="text" name="ref" value="{{ request.GET.ref }}"></label>
+          <label>Du<input type="date" name="du" value="{{ request.GET.du }}"></label>
+          <label>Au<input type="date" name="au" value="{{ request.GET.au }}"></label>
+          <label>Type
+            <select name="type">
+              <option value="ALL" {% if request.GET.type == 'ALL' or not request.GET.type %}selected{% endif %}>Tous</option>
+              <option value="RECU" {% if request.GET.type == 'RECU' %}selected{% endif %}>Reçus</option>
+              <option value="ENVOYE" {% if request.GET.type == 'ENVOYE' %}selected{% endif %}>Envoyés</option>
+            </select>
+          </label>
+          <button class="btn small" type="submit">Appliquer</button>
+          <a class="btn small ghost" href="/app/#recu">Réinitialiser</a>
+        </form>
+      </div>
+
+      {% if colis_form.errors %}
+        <div class="form-errors">
+          {{ colis_form.errors }}
+        </div>
+      {% endif %}
+
+      <div class="panels">
+
+        <!-- FRET -->
+        <section class="panel show" id="panel-recu">
+          <div class="capsule">
+            <button class="capsule-toggle" type="button" aria-expanded="false">
+              ➕ Nouveau Fret
+            </button>
+
+            <div class="capsule-body" hidden>
+              <form class="form-grid freight-form" method="post" action="#recu">
+                {% csrf_token %}
+                <input type="hidden" name="_form" value="colis_recu">
+
+                <div class="form-section span-3">
+                  <h4>Informations générales</h4>
+                </div>
+
+                <label>
+                  Référence
+                  <input type="text" value="Générée automatiquement" disabled>
+                </label>
+
+                <label>
+                  Statut
+                  {{ colis_form.statut }}
+                </label>
+
+                <label class="check-field">
+                  <span>Livraison ?</span>
+                  <div class="check-wrap">{{ colis_form.livraison }}</div>
+                </label>
+
+                <label>
+                  Type de fret
+                  {{ colis_form.type_fret }}
+                </label>
+
+                <label>
+                  Date enr.
+                  {{ colis_form.date_enregistrement }}
+                </label>
+
+                <label>
+                  Nom de l’agent
+                  {{ colis_form.agent_nom }}
+                </label>
+
+                <div class="form-section span-3">
+                  <h4>Expéditeur / Destinataire</h4>
+                </div>
+
+                <label>
+                  Expéditeur
+                  {{ colis_form.expediteur_nom }}
+                </label>
+
+                <label>
+                  Tél. expéditeur
+                  {{ colis_form.expediteur_tel }}
+                </label>
+
+                <label>
+                  Adresse expéditeur
+                  {{ colis_form.expediteur_adresse }}
+                </label>
+
+                <label>
+                  Destinataire
+                  {{ colis_form.destinataire_nom }}
+                </label>
+
+                <label>
+                  Tél. destinataire
+                  {{ colis_form.destinataire_tel }}
+                </label>
+
+                <label>
+                  Agence destination
+                  {{ colis_form.agence_destination }}
+                </label>
+
+                <div class="form-section span-3">
+                  <h4>Informations logistiques</h4>
+                </div>
+
+                <label>
+                  Poids (kg)
+                  {{ colis_form.poids_kg }}
+                </label>
+
+                <label>
+                  Prix fret (€)
+                  {{ colis_form.prix_fret_euros }}
+                </label>
+
+                <label>
+                  Restant (€)
+                  {{ colis_form.restant_euros }}
+                </label>
+
+                <label>
+                  Nombre total de colis
+                  {{ colis_form.nb_colis_total }}
+                </label>
+
+                <label class="span-3">
+                  Type colis
+                  {{ colis_form.type_colis }}
+                </label>
+
+                <label class="span-3">
+                  Description
+                  {{ colis_form.description }}
+                </label>
+
+                <div class="form-section span-3">
+                  <h4>Aperçu du fret</h4>
+                </div>
+
+                <div class="preview-grid span-3">
+                  <div class="preview-card">
+                    <div class="preview-label">Poids</div>
+                    <div id="preview_fret_poids" class="preview-value">0.00</div>
+                    <div class="preview-sub">kg</div>
+                  </div>
+
+                  <div class="preview-card">
+                    <div class="preview-label">Prix fret</div>
+                    <div id="preview_fret_prix" class="preview-value">0.00</div>
+                    <div class="preview-sub">EUR</div>
+                  </div>
+
+                  <div class="preview-card">
+                    <div class="preview-label">Restant</div>
+                    <div id="preview_fret_restant" class="preview-value">0.00</div>
+                    <div class="preview-sub">EUR</div>
+                  </div>
+
+                  <div class="preview-card">
+                    <div class="preview-label">Nombre colis</div>
+                    <div id="preview_fret_nb" class="preview-value">1</div>
+                    <div class="preview-sub">Total</div>
+                  </div>
+                </div>
+
+                <div class="grid-3 span-3">
+                  <div class="info"><strong>Type fret :</strong> <span id="preview_fret_type_fret">-</span></div>
+                  <div class="info"><strong>Agence destination :</strong> <span id="preview_fret_agence">-</span></div>
+                  <div class="info"><strong>Livraison :</strong> <span id="preview_fret_livraison">Non</span></div>
+                </div>
+
+                <div class="form-actions span-3">
+                  <button class="btn" type="submit">Enregistrer</button>
+                  <button class="btn ghost" type="button"
+                          onclick="this.closest('.capsule').querySelector('.capsule-body').hidden=true; this.closest('.capsule').querySelector('.capsule-toggle').setAttribute('aria-expanded','false')">
+                    Fermer
+                  </button>
+                </div>
+              </form>
+
+              {% if colis_form.errors %}
+                <div class="form-errors">{{ colis_form.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="table-wrap" style="margin-top:14px">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ST</th>
+                    <th>Livr.</th>
+                    <th>Référence</th>
+                    <th>Expéditeur</th>
+                    <th>Tél. Exp.</th>
+                    <th>Dt enr</th>
+                    <th>Prix fret</th>
+                    <th>Restant</th>
+                    <th>Poids</th>
+                    <th>NBs</th>
+                    <th>Description</th>
+                    <th>Destinataire</th>
+                    <th>Tél. Dest.</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for c in colis_list %}
+                  <tr>
+                    <td>
+                      {% if c.statut == 'PEC' %}
+                        <span class="st"></span>
+                      {% elif c.statut == 'ECR' %}
+                        <span class="st alert"></span>
+                      {% elif c.statut == 'ARR' %}
+                        <span class="st ok"></span>
+                      {% elif c.statut == 'LIVR' %}
+                        <span class="st ok"></span>
+                      {% else %}
+                        <span class="st"></span>
+                      {% endif %}
+                    </td>
+                    <td>{{ c.livraison|yesno:"✔,✖" }}</td>
+                    <td>{{ c.reference }}</td>
+                    <td>{{ c.expediteur_nom }}</td>
+                    <td>{{ c.expediteur_tel }}</td>
+                    <td>{{ c.date_enregistrement }}</td>
+                    <td>{{ c.prix_fret_euros }} €</td>
+                    <td>{{ c.restant_euros }} €</td>
+                    <td>{{ c.poids_kg }} kg</td>
+                    <td>{{ c.nb_colis_total }}</td>
+                    <td>{{ c.description }}</td>
+                    <td>{{ c.destinataire_nom }}</td>
+                    <td>{{ c.destinataire_tel }}</td>
+                    <td class="act">
+                      <a href="{% url 'fret_edit' c.id %}" class="action-btn edit" title="Modifier"><i class="bi bi-pencil-square"></i></a>
+                      <a href="{% url 'fret_detail' c.id %}" class="action-btn view" title="Voir"><i class="bi bi-eye"></i></a>
+                      <a href="{% url 'fret_print' c.id %}" class="action-btn print" title="Imprimer" target="_blank"><i class="bi bi-printer"></i></a>
+
+                      <a href="/app/?sms_numeros={{ c.destinataire_tel|urlencode }}&sms_message={{ 'AD Logistics : votre fret '|add:c.reference|add:' est arrivé. Merci de nous contacter.'|urlencode }}#sms"
+                         class="action-btn" title="Envoyer SMS">
+                        <i class="bi bi-chat-dots"></i>
+                      </a>
+
+                      <form method="post" action="{% url 'fret_delete' c.id %}" style="display:inline;" onsubmit="return confirm('Supprimer ce fret ?');">
+                        {% csrf_token %}
+                        <button type="submit" class="action-btn delete" title="Supprimer">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr><td colspan="14">Aucun enregistrement pour l’instant.</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- COLIS / TRANSFERT -->
+        <section class="panel" id="panel-envoye">
+          <div class="capsule">
+            <button class="capsule-toggle" type="button" aria-expanded="false">
+              ➕ Nouveau Colis
+            </button>
+
+            <div class="capsule-body" hidden>
+              <form class="form-grid freight-form" method="post" action="#envoye">
+                {% csrf_token %}
+                <input type="hidden" name="_form" value="transfert_argent">
+
+                <div class="form-section span-3">
+                  <h4>Informations générales</h4>
+                </div>
+
+                <label>
+                  Référence
+                  <input type="text" value="Générée automatiquement" disabled>
+                </label>
+
+                <label>
+                  Statut
+                  {{ transfert_form.statut }}
+                </label>
+
+                <label>
+                  Nom de l’agent
+                  {{ transfert_form.agent_nom }}
+                </label>
+
+                <div class="form-section span-3">
+                  <h4>Expéditeur / Destinataire</h4>
+                </div>
+
+                <label>
+                  Expéditeur
+                  {{ transfert_form.expediteur_nom }}
+                </label>
+
+                <label>
+                  Tél. expéditeur
+                  {{ transfert_form.expediteur_tel }}
+                </label>
+
+                <label>
+                  Destinataire
+                  {{ transfert_form.destinataire_nom }}
+                </label>
+
+                <label>
+                  Tél. destinataire
+                  {{ transfert_form.destinataire_tel }}
+                </label>
+
+                <div class="form-section span-3">
+                  <h4>Détails financiers</h4>
+                </div>
+
+                <label>
+                  Monnaie d’envoi
+                  {{ transfert_form.devise_envoi }}
+                </label>
+
+                <label>
+                  Somme envoyée
+                  {{ transfert_form.montant_envoye }}
+                </label>
+
+                <label>
+                  Taux de transfert
+                  {{ transfert_form.taux_transfert }}
+                </label>
+
+                <label>
+                  Monnaie de retrait
+                  {{ transfert_form.devise_reception }}
+                </label>
+
+                <label>
+                  Total à payer
+                  {{ transfert_form.montant_total_payer }}
+                </label>
+
+                <label>
+                  Montant à recevoir
+                  {{ transfert_form.montant_reception }}
+                </label>
+
+                <label>
+                  Date transfert
+                  {{ transfert_form.date_transfert }}
+                </label>
+
+                <label>
+                  Date retrait
+                  {{ transfert_form.date_retrait }}
+                </label>
+
+                <label class="span-3">
+                  Description
+                  {{ transfert_form.description }}
+                </label>
+
+                <div class="form-section span-3">
+                  <h4>Aperçu du colis / transfert</h4>
+                </div>
+
+                <div class="preview-grid span-3">
+                  <div class="preview-card">
+                    <div class="preview-label">Montant envoyé</div>
+                    <div id="preview_montant_envoye" class="preview-value">0.00</div>
+                    <div id="preview_devise_envoi" class="preview-sub">EUR</div>
+                  </div>
+
+                  <div class="preview-card">
+                    <div class="preview-label">Total à payer</div>
+                    <div id="preview_total" class="preview-value">0.00</div>
+                    <div id="preview_total_devise" class="preview-sub">EUR</div>
+                  </div>
+
+                  <div class="preview-card">
+                    <div class="preview-label">Taux transfert</div>
+                    <div id="preview_taux" class="preview-value">0.00</div>
+                    <div class="preview-sub">Taux appliqué</div>
+                  </div>
+
+                  <div class="preview-card">
+                    <div class="preview-label">Montant à recevoir</div>
+                    <div id="preview_reception" class="preview-value">0.00</div>
+                    <div id="preview_devise_reception" class="preview-sub">GNF</div>
+                  </div>
+                </div>
+
+                <div class="info span-3">
+                  <strong>Règle de frais appliquée :</strong>
+                  <span id="preview_regle">Aucune</span>
+                </div>
+
+                <div class="form-actions span-3">
+                  <button class="btn" type="submit">Enregistrer</button>
+                  <button class="btn ghost" type="button"
+                          onclick="this.closest('.capsule').querySelector('.capsule-body').hidden=true; this.closest('.capsule').querySelector('.capsule-toggle').setAttribute('aria-expanded','false')">
+                    Fermer
+                  </button>
+                </div>
+              </form>
+
+              {% if transfert_form.errors %}
+                <div class="form-errors">{{ transfert_form.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="table-wrap" style="margin-top:14px">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Statut</th>
+                  <th>Référence</th>
+                  <th>Agent</th>
+                  <th>Expéditeur</th>
+                  <th>Destinataire</th>
+                  <th>Envoi</th>
+                  <th>Total payé</th>
+                  <th>Taux</th>
+                  <th>Réception</th>
+                  <th>Date</th>
+                  <th>Date retrait</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for t in transfert_list %}
+                <tr>
+                  <td>
+                    {% if t.statut == 'OK' or t.statut == 'PAYE' %}
+                      <span class="st ok"></span>
+                    {% else %}
+                      <span class="st alert"></span>
+                    {% endif %}
+                  </td>
+                  <td>{{ t.reference }}</td>
+                  <td>{{ t.agent_nom }}</td>
+                  <td>{{ t.expediteur_nom }}</td>
+                  <td>{{ t.destinataire_nom }}</td>
+                  <td>{{ t.montant_envoye }} {{ t.devise_envoi }}</td>
+                  <td>{{ t.montant_total_payer }} {{ t.devise_envoi }}</td>
+                  <td>{{ t.taux_transfert }}</td>
+                  <td>{{ t.montant_reception }} {{ t.devise_reception }}</td>
+                  <td>{{ t.date_transfert }}</td>
+                  <td>{{ t.date_retrait|default:"-" }}</td>
+                  <td class="act">
+                    <a href="{% url 'transfert_edit' t.id %}" class="action-btn edit" title="Modifier"><i class="bi bi-pencil-square"></i></a>
+                    <a href="{% url 'transfert_detail' t.id %}" class="action-btn view" title="Voir"><i class="bi bi-eye"></i></a>
+                    <a href="{% url 'transfert_print' t.id %}" class="action-btn print" title="Imprimer" target="_blank"><i class="bi bi-printer"></i></a>
+
+                    <a href="/app/?sms_numeros={{ t.destinataire_tel|urlencode }}&sms_message={{ 'AD Logistics : votre transfert '|add:t.reference|add:' est disponible. Merci de nous contacter.'|urlencode }}#sms"
+                       class="action-btn" title="Envoyer SMS">
+                      <i class="bi bi-chat-dots"></i>
+                    </a>
+
+                    <form method="post" action="{% url 'transfert_delete' t.id %}" style="display:inline;" onsubmit="return confirm('Supprimer ce transfert ?');">
+                      {% csrf_token %}
+                      <button type="submit" class="action-btn delete" title="Supprimer">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="12">Aucun colis enregistré.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- FACTURES -->
+        <section class="panel" id="panel-facture">
+          <div class="capsule">
+            <button class="capsule-toggle" type="button" aria-expanded="false">
+              ➕ Nouvelle facture
+            </button>
+
+            <div class="capsule-body long-form" hidden>
+              <form class="form-grid" method="post" action="#panel-facture">
+                {% csrf_token %}
+                <input type="hidden" name="_form" value="facture">
+
+                {% if facture_form.non_field_errors %}
+                  <div class="form-errors span-3">
+                    {{ facture_form.non_field_errors }}
+                  </div>
+                {% endif %}
+
+                <div class="fieldset fieldset-doc">
+                  <div class="legend">Document</div>
+                  <label>Type {{ facture_form.type_piece }}</label>
+                  <label>Statut {{ facture_form.statut }}</label>
+                  <label>Date facture {{ facture_form.date_facture }}</label>
+                  <label>Date échéance {{ facture_form.date_echeance }}</label>
+                  <label>Date colis {{ facture_form.date_colis }}</label>
+                  <label>Réf colis {{ facture_form.ref_colis }}</label>
+                </div>
+
+                <div class="fieldset fieldset-exp">
+                  <div class="legend">Expéditeur</div>
+                  <label>Téléphone {{ facture_form.exp_tel }}</label>
+                  <label>Nom {{ facture_form.exp_nom }}</label>
+                  <label>Prénom {{ facture_form.exp_prenom }}</label>
+                  <label>Mail {{ facture_form.exp_mail }}</label>
+                  <label class="span-2">Adresse {{ facture_form.exp_adresse }}</label>
+                </div>
+
+                <div class="fieldset fieldset-des">
+                  <div class="legend">Destinataire</div>
+                  <label>Téléphone {{ facture_form.des_tel }}</label>
+                  <label>Nom {{ facture_form.des_nom }}</label>
+                  <label>Prénom {{ facture_form.des_prenom }}</label>
+                  <label class="span-2">Mail {{ facture_form.des_mail }}</label>
+                  <label>Agence {{ facture_form.des_agence }}</label>
+                  <label>Livraison ? {{ facture_form.livraison }}</label>
+                  <label class="span-2">Adresse destinataire {{ facture_form.des_adresse }}</label>
+                </div>
+
+                <div class="fieldset fieldset-colis">
+                  <div class="legend">Informations sur l’envoi du colis</div>
+                  <label class="span-2">Description {{ facture_form.description }}</label>
+                  <label class="span-2">Produit / Référence {{ facture_form.produit }}</label>
+                  <label>Poids (kg) {{ facture_form.poids_kg }}</label>
+                  <label>Nombre de colis {{ facture_form.nb_colis }}</label>
+                </div>
+
+                <div class="fieldset fieldset-prix">
+                  <div class="legend">Prix du colis / Facturation</div>
+                  <label>Qui paye ? {{ facture_form.qui_paye }}</label>
+                  <label>Devise {{ facture_form.devise }}</label>
+                  <label>Montant HT {{ facture_form.montant_ht }}</label>
+                  <label>TVA (%) {{ facture_form.taux_tva }}</label>
+                  <label>Remise {{ facture_form.remise }}</label>
+                  <label>Montant payé {{ facture_form.montant_paye }}</label>
+                </div>
+
+                <div class="fieldset fieldset-notes">
+                  <div class="legend">Notes</div>
+                  <label class="span-2">Note client {{ facture_form.note_client }}</label>
+                  <label class="span-2">Note interne {{ facture_form.note_interne }}</label>
+                </div>
+
+                <div class="fieldset preview-box fieldset-preview">
+                  <div class="legend">Aperçu facture</div>
+
+                  <div class="preview-layout">
+                    <div class="preview-kpis">
+                      <div class="kpi-card">
+                        <span class="kpi-label">Base HT</span>
+                        <strong id="facture_montant_ht_preview">0.00</strong>
+                      </div>
+                      <div class="kpi-card">
+                        <span class="kpi-label">TVA</span>
+                        <strong id="facture_montant_tva_preview">0.00</strong>
+                      </div>
+                      <div class="kpi-card">
+                        <span class="kpi-label">Total TTC</span>
+                        <strong id="facture_montant_ttc_preview">0.00</strong>
+                      </div>
+                      <div class="kpi-card">
+                        <span class="kpi-label">Reste à payer</span>
+                        <strong id="facture_reste_preview">0.00</strong>
+                      </div>
+                    </div>
+
+                    <div class="preview-side">
+                      <div class="preview-info-card">
+                        <span class="preview-info-label">Client facturé</span>
+                        <strong class="preview-info-value" id="facture_client_preview">-</strong>
+                      </div>
+
+                      <div class="preview-info-card">
+                        <span class="preview-info-label">Réf colis</span>
+                        <strong class="preview-info-value" id="facture_ref_preview">-</strong>
+                      </div>
+
+                      <div class="preview-info-card">
+                        <span class="preview-info-label">Qui paye</span>
+                        <strong class="preview-info-value" id="facture_quipaye_preview">-</strong>
+                      </div>
+
+                      <div class="preview-info-card">
+                        <span class="preview-info-label">Type</span>
+                        <strong class="preview-info-value" id="facture_type_preview">-</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="actions-sticky">
+                  <div class="actions-right">
+                    <button class="btn" type="submit" name="action" value="save">Enregistrer la facture</button>
+                    <button class="btn ghost" type="submit" name="action" value="save_validate">Enregistrer et valider</button>
+                    <button class="btn ghost" type="button"
+                            onclick="this.closest('.capsule').querySelector('.capsule-body').hidden=true; this.closest('.capsule').querySelector('.capsule-toggle').setAttribute('aria-expanded','false')">
+                      Fermer
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="table-wrap" style="margin-top:14px">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Date facture</th>
+                  <th>Numéro</th>
+                  <th>Type</th>
+                  <th>Réf colis</th>
+                  <th>Client</th>
+                  <th>Total TTC</th>
+                  <th>Payé</th>
+                  <th>Reste</th>
+                  <th>Statut</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for f in facture_list %}
+                <tr>
+                  <td>{{ f.date_facture|date:"d/m/Y" }}</td>
+                  <td><strong>{{ f.numero }}</strong></td>
+                  <td>{{ f.get_type_piece_display }}</td>
+                  <td>{{ f.ref_colis }}</td>
+                  <td>{{ f.client_nom_complet }}</td>
+                  <td>{{ f.montant_ttc }} {{ f.devise }}</td>
+                  <td>{{ f.montant_paye }} {{ f.devise }}</td>
+                  <td>{{ f.reste_a_payer }} {{ f.devise }}</td>
+                  <td>
+                    {% if f.statut == "PAYEE" %}
+                      <span class="badge success">Payée</span>
+                    {% elif f.statut == "PARTIEL" %}
+                      <span class="badge warning">Partielle</span>
+                    {% elif f.statut == "RETARD" %}
+                      <span class="badge danger">En retard</span>
+                    {% elif f.statut == "ENVOYEE" %}
+                      <span class="badge info">Envoyée</span>
+                    {% elif f.statut == "ANNULEE" %}
+                      <span class="badge muted">Annulée</span>
+                    {% elif f.statut == "VALIDE" %}
+                      <span class="badge primary">Validée</span>
+                    {% else %}
+                      <span class="badge dark">Brouillon</span>
+                    {% endif %}
+                  </td>
+                  <td class="act">
+                    <a href="{% url 'facture_detail' f.pk %}" class="action-btn view" title="Voir"><i class="bi bi-eye"></i></a>
+                    <a href="{% url 'facture_update' f.pk %}" class="action-btn edit" title="Modifier"><i class="bi bi-pencil-square"></i></a>
+                    <a href="{% url 'facture_print' f.pk %}" class="action-btn print" title="Imprimer" target="_blank"><i class="bi bi-printer"></i></a>
+                    <a href="{% url 'facture_pdf_download' f.pk %}" class="pill" title="Télécharger PDF">PDF</a>
+                    <a href="{% url 'facture_email_compose' f.pk %}" class="pill" title="Envoyer par e-mail">E-mail</a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="10">Aucune facture pour l’instant.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- DEVIS -->
+        <section class="panel" id="panel-devis">
+		  <div class="capsule">
+			<button class="capsule-toggle" type="button" aria-expanded="false">
+			  ➕ Nouveau devis
+			</button>
+
+			<div class="capsule-body long-form" hidden>
+			  {% if devis_form.errors %}
+				<div class="form-errors">
+				  {{ devis_form.errors }}
+				</div>
+			  {% endif %}
+
+			  {% if devis_form.non_field_errors %}
+				<div class="form-errors">
+				  {{ devis_form.non_field_errors }}
+				</div>
+			  {% endif %}
+
+			  <form class="form-grid" method="post" action="#devis">
+				{% csrf_token %}
+				<input type="hidden" name="_form" value="devis">
+				{{ devis_form.type_piece }}
+
+				<div class="fieldset"><div class="legend">Expéditeur</div>
+				  <label> Téléphone{{ devis_form.exp_tel }} </label>
+				  <label>Nom {{ devis_form.exp_nom }} </label>
+				  <label>Prénom{{ devis_form.exp_prenom }} </label>
+				  <label> Mail {{ devis_form.exp_mail }}</label>
+				  <label class="span-2"> Adresse{{ devis_form.exp_adresse }}</label>
+				</div>
+
+				<div class="fieldset">
+				  <div class="legend">Destinataire</div>
+				  <label>Téléphone {{ devis_form.des_tel }} </label>
+				  <label>Nom{{ devis_form.des_nom }}</label>
+				  <label>Prénom{{ devis_form.des_prenom }}</label>
+				  <label>Mail{{ devis_form.des_mail }}</label>
+				  <label>
+					Agence
+					{{ devis_form.des_agence }}
+				  </label>
+
+				  <label>
+					Livraison ?
+					{{ devis_form.livraison }}
+				  </label>
+
+				  <label class="span-2">
+					Adresse
+					{{ devis_form.des_adresse }}
+				  </label>
+				</div>
+
+				<div class="fieldset">
+				  <div class="legend">Informations colis</div>
+
+				  <label class="span-2">
+					Description
+					{{ devis_form.description }}
+				  </label>
+
+				  <label class="span-2">
+					Produit
+					{{ devis_form.produit }}
+				  </label>
+				</div>
+
+				<div class="fieldset">
+				  <div class="legend">Prix estimé</div>
+
+				  <label>
+					Qui paye ?
+					{{ devis_form.qui_paye }}
+				  </label>
+
+				  <label>
+					Montant estimé
+					{{ devis_form.montant_ht }}
+				  </label>
+
+				  <label>
+					Devise
+					{{ devis_form.devise }}
+				  </label>
+				</div>
+
+				<div class="fieldset">
+				  <div class="legend">Identifiant</div>
+
+				  <label>
+					Date
+					{{ devis_form.date_colis }}
+				  </label>
+
+				  <label class="span-2">
+					Réf Colis
+					{{ devis_form.ref_colis }}
+				  </label>
+				</div>
+
+				<div class="actions-sticky">
+				  <div class="actions-right">
+					<button class="btn" type="submit">
+					  Enregistrer le devis
+					</button>
+
+					<button class="btn ghost" type="button"
+							onclick="this.closest('.capsule').querySelector('.capsule-body').hidden=true; this.closest('.capsule').querySelector('.capsule-toggle').setAttribute('aria-expanded','false')">
+					  Fermer
+					</button>
+				  </div>
+				</div>
+			  </form>
+			</div>
+		  </div>
+
+		  <div class="table-wrap" style="margin-top:14px">
+			<table class="table">
+			  <thead>
+				<tr>
+				  <th>Date</th>
+				  <th>Réf</th>
+				  <th>Expéditeur</th>
+				  <th>Destinataire</th>
+				  <th>Montant</th>
+				  <th>Qui paye</th>
+				  <th>Actions</th>
+				</tr>
+			  </thead>
+			  <tbody>
+				{% for d in devis_list %}
+				<tr>
+				  <td>{{ d.date_colis }}</td>
+				  <td>{{ d.ref_colis }}</td>
+				  <td>{{ d.exp_nom }}</td>
+				  <td>{{ d.des_nom }}</td>
+				  <td>{{ d.montant_ht }} {{ d.devise }}</td>
+				  <td>
+					{% if d.qui_paye == 'EXP' %}
+					  Expéditeur
+					{% elif d.qui_paye == 'DES' %}
+					  Destinataire
+					{% else %}
+					  Autre
+					{% endif %}
+				  </td>
+				  <td class="act">
+					<a href="#" class="action-btn edit" title="Modifier">
+					  <i class="bi bi-pencil-square"></i>
+					</a>
+					<a href="#" class="action-btn view" title="Voir">
+					  <i class="bi bi-eye"></i>
+					</a>
+					<a href="#" class="action-btn print" title="Imprimer">
+					  <i class="bi bi-printer"></i>
+					</a>
+				  </td>
+				</tr>
+				{% empty %}
+				<tr>
+				  <td colspan="7">Vous n’avez pas encore de devis.</td>
+				</tr>
+				{% endfor %}
+			  </tbody>
+			</table>
+		  </div>
+        </section>
+
+        <!-- RECHERCHE -->
+        <section class="panel" id="panel-recherche">
+          <form class="form-grid" method="get" action="#recherche">
+            <input type="hidden" name="search" value="1">
+
+            <label>Référence
+              <input type="text" name="ref" value="{{ request.GET.ref }}">
+            </label>
+            <label>Téléphone
+              <input type="text" name="tel" value="{{ request.GET.tel }}">
+            </label>
+            <label>Nom / Destinataire
+              <input type="text" name="nom" value="{{ request.GET.nom }}">
+            </label>
+            <label>Du
+              <input type="date" name="du" value="{{ request.GET.du }}">
+            </label>
+            <label>Au
+              <input type="date" name="au" value="{{ request.GET.au }}">
+            </label>
+            <label>Type
+              <select name="type">
+                <option value="ALL" {% if request.GET.type == 'ALL' or not request.GET.type %}selected{% endif %}>Tous</option>
+                <option value="RECU" {% if request.GET.type == 'RECU' %}selected{% endif %}>Reçus</option>
+                <option value="ENVOYE" {% if request.GET.type == 'ENVOYE' %}selected{% endif %}>Envoyés</option>
+              </select>
+            </label>
+            <label>Statut
+              <select name="statut">
+                <option value="" {% if not request.GET.statut %}selected{% endif %}>--</option>
+                <option value="OK" {% if request.GET.statut == 'OK' %}selected{% endif %}>OK</option>
+                <option value="ATT" {% if request.GET.statut == 'ATT' %}selected{% endif %}>À vérifier</option>
+                <option value="LIVR" {% if request.GET.statut == 'LIVR' %}selected{% endif %}>Livré</option>
+              </select>
+            </label>
+
+            <div class="form-actions">
+              <button class="btn" type="submit">Rechercher</button>
+              <a class="btn ghost" href="/app/#recherche">Réinitialiser</a>
+              {% if search_results %}
+                <a class="btn" href="{% url 'export_colis' %}?{{ request.GET.urlencode }}">Exporter CSV</a>
+              {% endif %}
+            </div>
+          </form>
+
+          <div class="table-wrap" style="margin-top:14px">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>ST</th>
+                  <th>Type</th>
+                  <th>Référence</th>
+                  <th>Expéditeur</th>
+                  <th>Tél</th>
+                  <th>Date</th>
+                  <th>Prix</th>
+                  <th>NBs</th>
+                  <th>Description</th>
+                  <th>Destinataire</th>
+                  <th>Tél Dest</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if search_results %}
+                  {% for r in search_results %}
+                  <tr>
+                    <td>
+                      {% if r.statut == 'OK' %}
+                        <span class="st ok"></span>
+                      {% elif r.statut == 'ATT' %}
+                        <span class="st alert"></span>
+                      {% else %}
+                        <span class="st"></span>
+                      {% endif %}
+                    </td>
+                    <td>{{ r.kind }}</td>
+                    <td>{{ r.reference }}</td>
+                    <td>{{ r.nom }}</td>
+                    <td>{{ r.tel }}</td>
+                    <td>{{ r.date }}</td>
+                    <td>{{ r.prix }}</td>
+                    <td>{{ r.nbs }}</td>
+                    <td>{{ r.description }}</td>
+                    <td>{{ r.nom_dest }}</td>
+                    <td>{{ r.tel_dest }}</td>
+                    <td class="act">
+                      <a href="#" class="action-btn edit" title="Modifier"><i class="bi bi-pencil-square"></i></a>
+                      <a href="#" class="action-btn view" title="Voir"><i class="bi bi-eye"></i></a>
+                      <a href="#" class="action-btn print" title="Imprimer"><i class="bi bi-printer"></i></a>
+                      <a href="#" class="pill">+Crtn</a>
+                      <a href="#" class="pill">+Enlev</a>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr><td colspan="12">Aucun résultat.</td></tr>
+                  {% endfor %}
+                {% else %}
+                  <tr><td colspan="12">Lance une recherche pour afficher les colis.</td></tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- BILANS -->
+        <section class="panel" id="panel-bilans">
+
+          <div class="bilan-header-card">
+            <div class="bilan-brand">
+              <div class="bilan-logo-wrap">
+                <img src="{% static 'gestion/img/logo-adl.png' %}" alt="AD Logistics" class="bilan-logo">
+              </div>
+              <div class="bilan-header-left">
+                <h2>Bilan Fret / Colis</h2>
+                <p>Suivi indépendant des opérations Fret.</p>
+              </div>
+            </div>
+
+            <div class="bilan-header-actions no-print">
+              <button type="button" class="btn" onclick="printSection('bilan-fret-print-area')">Imprimer Fret</button>
+              <a class="btn ghost" href="{% url 'bilan_fret_pdf' %}?fret_periode={{ fret_period }}{% if request.GET.fret_du %}&fret_du={{ request.GET.fret_du }}{% endif %}{% if request.GET.fret_au %}&fret_au={{ request.GET.fret_au }}{% endif %}">PDF Fret</a>
+            </div>
+          </div>
+
+          <div id="bilan-fret-print-area">
+            <div class="capsule bilan-filter-card">
+              <div class="capsule-body" style="display:block;">
+                <form class="form-grid" method="get" action="#bilans">
+                  <label>
+                    Période Fret
+                    <select name="fret_periode" id="id_fret_periode">
+                      <option value="jour" {% if fret_period == 'jour' or not fret_period %}selected{% endif %}>Jour J</option>
+                      <option value="semaine" {% if fret_period == 'semaine' %}selected{% endif %}>Semaine</option>
+                      <option value="mois" {% if fret_period == 'mois' %}selected{% endif %}>Mois</option>
+                      <option value="libre" {% if fret_period == 'libre' %}selected{% endif %}>Période libre</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    Du
+                    <input type="date" name="fret_du" id="id_fret_du" value="{{ request.GET.fret_du }}">
+                  </label>
+
+                  <label>
+                    Au
+                    <input type="date" name="fret_au" id="id_fret_au" value="{{ request.GET.fret_au }}">
+                  </label>
+
+                  <div class="form-actions no-print">
+                    <button class="btn" type="submit">Appliquer</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <div class="bilan-section-card fret-theme">
+              <div class="bilan-section-head">
+                <div class="bilan-title-block">
+                  <span class="bilan-mini-label">SYNTHÈSE</span>
+                  <h3>Bilan Fret / Colis</h3>
+                  <p>Historique et totaux des frets enregistrés sur la période.</p>
+                </div>
+              </div>
+
+              <div class="bilan-kpis">
+                <article class="kpi-card">
+                  <div class="kpi-top"><span class="kpi-label">Opérations</span></div>
+                  <div class="kpi-value">{{ fret_bilan.nb_operations|default:0 }}</div>
+                </article>
+
+                <article class="kpi-card">
+                  <div class="kpi-top"><span class="kpi-label">Total fret</span></div>
+                  <div class="kpi-value">{{ fret_bilan.total_prix_fret|default:"0.00" }} <small>€</small></div>
+                </article>
+
+                <article class="kpi-card">
+                  <div class="kpi-top"><span class="kpi-label">Total restant</span></div>
+                  <div class="kpi-value">{{ fret_bilan.total_restant|default:"0.00" }} <small>€</small></div>
+                </article>
+
+                <article class="kpi-card">
+                  <div class="kpi-top"><span class="kpi-label">Poids total</span></div>
+                  <div class="kpi-value">{{ fret_bilan.total_poids|default:"0.00" }} <small>kg</small></div>
+                </article>
+
+                <article class="kpi-card">
+                  <div class="kpi-top"><span class="kpi-label">Nb colis</span></div>
+                  <div class="kpi-value">{{ fret_bilan.total_nb_colis|default:0 }}</div>
+                </article>
+              </div>
+
+              <div class="table-wrap bilan-table-wrap">
+                <table class="table bilan-table">
+                  <thead>
+                    <tr>
+                      <th>Réf</th>
+                      <th>Date</th>
+                      <th>Expéditeur</th>
+                      <th>Destinataire</th>
+                      <th>Prix fret</th>
+                      <th>Restant</th>
+                      <th>Poids</th>
+                      <th>Nb colis</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for c in fret_bilan_list %}
+                    <tr>
+                      <td>{{ c.reference }}</td>
+                      <td>{{ c.date_enregistrement }}</td>
+                      <td>{{ c.expediteur_nom }}</td>
+                      <td>{{ c.destinataire_nom }}</td>
+                      <td>{{ c.prix_fret_euros }} €</td>
+                      <td>{{ c.restant_euros }} €</td>
+                      <td>{{ c.poids_kg }} kg</td>
+                      <td>{{ c.nb_colis_total }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="8" class="empty-row">Aucun fret sur cette période.</td></tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="bilan-header-card" style="margin-top:24px;">
+            <div class="bilan-brand">
+              <div class="bilan-logo-wrap">
+                <img src="{% static 'gestion/img/logo-adl.png' %}" alt="AD Logistics" class="bilan-logo">
+              </div>
+              <div class="bilan-header-left">
+                <h2>Bilan Transfert d’argent</h2>
+                <p>Suivi indépendant des opérations de transfert d’argent.</p>
+              </div>
+            </div>
+
+            <div class="bilan-header-actions no-print">
+              <button type="button" class="btn" onclick="printSection('bilan-transfert-print-area')">Imprimer Transfert</button>
+              <a class="btn ghost" href="{% url 'bilan_transfert_pdf' %}?transfert_periode={{ transfert_period }}{% if request.GET.transfert_du %}&transfert_du={{ request.GET.transfert_du }}{% endif %}{% if request.GET.transfert_au %}&transfert_au={{ request.GET.transfert_au }}{% endif %}">PDF Transfert</a>
+            </div>
+          </div>
+
+          <div id="bilan-transfert-print-area">
+            <div class="capsule bilan-filter-card">
+              <div class="capsule-body" style="display:block;">
+                <form class="form-grid" method="get" action="#bilans">
+                  <label>
+                    Période Transfert
+                    <select name="transfert_periode" id="id_transfert_periode">
+                      <option value="jour" {% if transfert_period == 'jour' or not transfert_period %}selected{% endif %}>Jour J</option>
+                      <option value="semaine" {% if transfert_period == 'semaine' %}selected{% endif %}>Semaine</option>
+                      <option value="mois" {% if transfert_period == 'mois' %}selected{% endif %}>Mois</option>
+                      <option value="libre" {% if transfert_period == 'libre' %}selected{% endif %}>Période libre</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    Du
+                    <input type="date" name="transfert_du" id="id_transfert_du" value="{{ request.GET.transfert_du }}">
+                  </label>
+
+                  <label>
+                    Au
+                    <input type="date" name="transfert_au" id="id_transfert_au" value="{{ request.GET.transfert_au }}">
+                  </label>
+
+                  <div class="form-actions no-print">
+                    <button class="btn" type="submit">Appliquer</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <div class="bilan-section-card transfert-theme">
+              <div class="bilan-section-head">
+                <div class="bilan-title-block">
+                  <span class="bilan-mini-label">SYNTHÈSE</span>
+                  <h3>Bilan Transfert d’argent</h3>
+                  <p>Historique et synthèse des opérations de transfert sur la période.</p>
+                </div>
+              </div>
+
+              <div class="bilan-kpis">
+                <article class="kpi-card">
+                  <div class="kpi-top"><span class="kpi-label">Opérations</span></div>
+                  <div class="kpi-value">{{ transfert_bilan.nb_operations|default:0 }}</div>
+                </article>
+
+                <article class="kpi-card">
+                  <div class="kpi-top"><span class="kpi-label">Sommes envoyées</span></div>
+                  <div class="kpi-value">{{ transfert_bilan.total_envoye|default:"0.00" }}</div>
+                </article>
+
+                <article class="kpi-card">
+                  <div class="kpi-top"><span class="kpi-label">Frais d’envoi</span></div>
+                  <div class="kpi-value">{{ transfert_bilan.total_frais|default:"0.00" }}</div>
+                </article>
+
+                <article class="kpi-card">
+                  <div class="kpi-top"><span class="kpi-label">Total payé</span></div>
+                  <div class="kpi-value">{{ transfert_bilan.total_a_payer|default:"0.00" }}</div>
+                </article>
+
+                <article class="kpi-card">
+                  <div class="kpi-top"><span class="kpi-label">Sommes reçues</span></div>
+                  <div class="kpi-value">{{ transfert_bilan.total_a_recevoir|default:"0.00" }}</div>
+                </article>
+              </div>
+
+              <div class="subtotals-grid">
+                <div class="subtotals-card">
+                  <h4>Sous-totaux envoi</h4>
+                  {% for row in transfert_sous_totaux.envoi %}
+                    <div class="subtotal-line">
+                      <strong>{{ row.devise_envoi }}</strong>
+                      <span>Envoyé : {{ row.total_envoye }}</span>
+                      <span>Frais : {{ row.total_frais }}</span>
+                      <span>Total payé : {{ row.total_a_payer }}</span>
+                      <span>Ops : {{ row.nb_operations }}</span>
+                    </div>
+                  {% empty %}
+                    <div class="subtotal-empty">Aucune donnée.</div>
+                  {% endfor %}
+                </div>
+
+                <div class="subtotals-card">
+                  <h4>Sous-totaux réception</h4>
+                  {% for row in transfert_sous_totaux.reception %}
+                    <div class="subtotal-line">
+                      <strong>{{ row.devise_reception }}</strong>
+                      <span>Reçu : {{ row.total_a_recevoir }}</span>
+                      <span>Ops : {{ row.nb_operations }}</span>
+                    </div>
+                  {% empty %}
+                    <div class="subtotal-empty">Aucune donnée.</div>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="table-wrap bilan-table-wrap">
+                <table class="table bilan-table">
+                  <thead>
+                    <tr>
+                      <th>Réf</th>
+                      <th>Date</th>
+                      <th>Expéditeur</th>
+                      <th>Destinataire</th>
+                      <th>Montant envoyé</th>
+                      <th>Frais</th>
+                      <th>Total payé</th>
+                      <th>Taux</th>
+                      <th>Montant reçu</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for t in transfert_bilan_list %}
+                    <tr>
+                      <td>{{ t.reference }}</td>
+                      <td>{{ t.date_transfert }}</td>
+                      <td>{{ t.expediteur_nom }}</td>
+                      <td>{{ t.destinataire_nom }}</td>
+                      <td>{{ t.montant_envoye }} {{ t.devise_envoi }}</td>
+                      <td>{{ t.frais_transfert }} {{ t.devise_envoi }}</td>
+                      <td>{{ t.montant_total_payer }} {{ t.devise_envoi }}</td>
+                      <td>{{ t.taux_transfert }}</td>
+                      <td>{{ t.montant_reception }} {{ t.devise_reception }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="9" class="empty-row">Aucun transfert sur cette période.</td></tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SMS -->
+        <section class="panel" id="panel-sms">
+          <div class="capsule">
+            <button class="capsule-toggle" type="button" aria-expanded="true">
+              📩 Envoyer des SMS
+            </button>
+
+            <div class="capsule-body" style="display:block;">
+              {% if request.GET.sms_numeros or request.GET.sms_message %}
+                <div class="info" style="margin-bottom:12px;">
+                  SMS prérempli depuis un colis / fret. Vérifie et envoie.
+                </div>
+              {% endif %}
+
+              <form class="form-grid" method="post" action="#sms">
+                {% csrf_token %}
+                <input type="hidden" name="_form" value="sms">
+
+                <div class="form-section span-3">
+                  <h4>Envoi SMS</h4>
+                </div>
+
+                <label class="span-3">
+                  Numéros de téléphone
+                  {{ sms_form.numeros }}
+                  {% if sms_form.numeros.help_text %}
+                    <small class="muted">{{ sms_form.numeros.help_text }}</small>
+                  {% endif %}
+                  {% for error in sms_form.numeros.errors %}
+                    <small style="color:#c00;display:block;">{{ error }}</small>
+                  {% endfor %}
+                </label>
+
+                <label class="span-3">
+                  Message
+                  {{ sms_form.message }}
+                  {% for error in sms_form.message.errors %}
+                    <small style="color:#c00;display:block;">{{ error }}</small>
+                  {% endfor %}
+                </label>
+
+                {% if sms_form.non_field_errors %}
+                  <div class="form-errors span-3">
+                    {% for err in sms_form.non_field_errors %}
+                      <div>{{ err }}</div>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+
+                <div class="form-actions span-3">
+                  <button class="btn" type="submit">Envoyer les SMS</button>
+                </div>
+              </form>
+
+              <div class="table-wrap" style="margin-top:20px;">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Numéro</th>
+                      <th>Message</th>
+                      <th>Statut</th>
+                      <th>Erreur</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for log in sms_logs %}
+                    <tr>
+                      <td>{{ log.created_at|date:"d/m/Y H:i" }}</td>
+                      <td>{{ log.numero }}</td>
+                      <td>{{ log.message|truncatechars:90 }}</td>
+                      <td>
+                        {% if log.statut == 'success' %}
+                          <span class="badge success">Envoyé</span>
+                        {% else %}
+                          <span class="badge danger">Erreur</span>
+                        {% endif %}
+                      </td>
+                      <td>{{ log.erreur|default:"-"|truncatechars:80 }}</td>
+                      <td class="act">
+                        <a href="{% url 'sms_detail' log.id %}" class="action-btn view" title="Voir"><i class="bi bi-eye"></i></a>
+                        <a href="{% url 'sms_modifier' log.id %}" class="action-btn edit" title="Modifier et renvoyer"><i class="bi bi-pencil-square"></i></a>
+                        <a href="{% url 'sms_renvoyer' log.id %}" class="action-btn print" title="Renvoyer"><i class="bi bi-arrow-repeat"></i></a>
+
+                        <form method="post" action="{% url 'sms_supprimer' log.id %}" style="display:inline;" onsubmit="return confirm('Supprimer cet historique SMS ?');">
+                          {% csrf_token %}
+                          <button type="submit" class="action-btn delete" title="Supprimer">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td colspan="6">Aucun SMS envoyé pour le moment.</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest('.capsule-toggle');
+  if (!btn) return;
+  const panel = btn.nextElementSibling;
+  if (!panel || !panel.classList.contains('capsule-body')) return;
+  const open = btn.getAttribute('aria-expanded') === 'true';
+  panel.hidden = open;
+  btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const tabs  = Array.from(document.querySelectorAll('.tab'));
+  const getPanel = id => document.getElementById('panel-' + id);
+
+  function showTab(id){
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('show'));
+    const panel = getPanel(id) || document.querySelector('.panel');
+    if (panel) panel.classList.add('show');
+
+    tabs.forEach(t => {
+      const active = t.dataset.tab === id;
+      t.classList.toggle('active', active);
+      t.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+
+    if (location.hash.replace('#','') !== id) {
+      history.replaceState(null, '', '#' + id);
+    }
+  }
+
+  tabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
+  const initial = location.hash ? location.hash.replace('#','') : 'recu';
+  showTab(initial);
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const montantInput = document.getElementById('id_montant_envoye');
+  const tauxInput = document.getElementById('id_taux_transfert');
+  const deviseEnvoiInput = document.getElementById('id_devise_envoi');
+  const deviseReceptionInput = document.getElementById('id_devise_reception');
+  const totalInput = document.getElementById('id_montant_total_payer');
+  const receptionInput = document.getElementById('id_montant_reception');
+
+  const previewMontant = document.getElementById('preview_montant_envoye');
+  const previewDeviseEnvoi = document.getElementById('preview_devise_envoi');
+  const previewTotal = document.getElementById('preview_total');
+  const previewTotalDevise = document.getElementById('preview_total_devise');
+  const previewTaux = document.getElementById('preview_taux');
+  const previewReception = document.getElementById('preview_reception');
+  const previewDeviseReception = document.getElementById('preview_devise_reception');
+  const previewRegle = document.getElementById('preview_regle');
+
+  function toNumber(value) {
+    if (!value) return 0;
+    value = String(value).replace(',', '.');
+    const n = parseFloat(value);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function formatNumber(value) {
+    return new Intl.NumberFormat('fr-FR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(value);
+  }
+
+  function getFraisRate(montant) {
+    if (montant >= 1 && montant <= 999) return 4;
+    if (montant >= 1000) return 3;
+    return 0;
+  }
+
+  function computeReception(montant, taux, deviseEnvoi, deviseReception) {
+    if (montant <= 0 || taux <= 0) return 0;
+
+    if (deviseEnvoi === 'EUR' && deviseReception === 'GNF') {
+      return montant * taux;
+    }
+
+    if (deviseEnvoi === 'GNF' && deviseReception === 'EUR') {
+      return montant / taux;
+    }
+
+    return montant;
+  }
+
+  function updatePreview() {
+    if (!montantInput || !tauxInput || !deviseEnvoiInput || !deviseReceptionInput) return;
+
+    const montant = toNumber(montantInput.value);
+    const taux = toNumber(tauxInput.value);
+    const deviseEnvoi = deviseEnvoiInput.value || 'EUR';
+    const deviseReception = deviseReceptionInput.value || 'GNF';
+
+    const fraisRate = getFraisRate(montant);
+    const frais = montant * fraisRate / 100;
+    const total = montant + frais;
+    const reception = computeReception(montant, taux, deviseEnvoi, deviseReception);
+
+    if (totalInput) totalInput.value = total.toFixed(2);
+    if (receptionInput) receptionInput.value = reception.toFixed(2);
+
+    if (previewMontant) previewMontant.textContent = formatNumber(montant);
+    if (previewDeviseEnvoi) previewDeviseEnvoi.textContent = deviseEnvoi;
+    if (previewTotal) previewTotal.textContent = formatNumber(total);
+    if (previewTotalDevise) previewTotalDevise.textContent = deviseEnvoi;
+    if (previewTaux) previewTaux.textContent = formatNumber(taux);
+    if (previewReception) previewReception.textContent = formatNumber(reception);
+    if (previewDeviseReception) previewDeviseReception.textContent = deviseReception;
+
+    if (previewRegle) {
+      if (fraisRate === 4) {
+        previewRegle.textContent = 'Montant entre 1 € et 999 € → frais 4%';
+      } else if (fraisRate === 3) {
+        previewRegle.textContent = 'Montant à partir de 1000 € → frais 3%';
+      } else {
+        previewRegle.textContent = 'Aucune';
+      }
+    }
+  }
+
+  [montantInput, tauxInput, deviseEnvoiInput, deviseReceptionInput].forEach(function (el) {
+    if (!el) return;
+    el.addEventListener('input', updatePreview);
+    el.addEventListener('change', updatePreview);
+  });
+
+  updatePreview();
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const poidsInput = document.getElementById('id_poids_kg');
+  const prixInput = document.getElementById('id_prix_fret_euros');
+  const restantInput = document.getElementById('id_restant_euros');
+  const nbInput = document.getElementById('id_nb_colis_total');
+  const typeFretInput = document.getElementById('id_type_fret');
+  const agenceInput = document.getElementById('id_agence_destination');
+  const livraisonInput = document.getElementById('id_livraison');
+
+  const previewPoids = document.getElementById('preview_fret_poids');
+  const previewPrix = document.getElementById('preview_fret_prix');
+  const previewRestant = document.getElementById('preview_fret_restant');
+  const previewNb = document.getElementById('preview_fret_nb');
+  const previewTypeFret = document.getElementById('preview_fret_type_fret');
+  const previewAgence = document.getElementById('preview_fret_agence');
+  const previewLivraison = document.getElementById('preview_fret_livraison');
+
+  function toNumber(value) {
+    if (!value) return 0;
+    value = String(value).replace(',', '.');
+    const n = parseFloat(value);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function formatNumber(value) {
+    return new Intl.NumberFormat('fr-FR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(value);
+  }
+
+  function selectedText(select) {
+    if (!select || !select.options.length) return '-';
+    return select.options[select.selectedIndex]?.text || '-';
+  }
+
+  function updateFretPreview() {
+    if (previewPoids && poidsInput) previewPoids.textContent = formatNumber(toNumber(poidsInput.value));
+    if (previewPrix && prixInput) previewPrix.textContent = formatNumber(toNumber(prixInput.value));
+    if (previewRestant && restantInput) previewRestant.textContent = formatNumber(toNumber(restantInput.value));
+    if (previewNb && nbInput) previewNb.textContent = parseInt(nbInput.value || '1', 10) || 1;
+    if (previewTypeFret && typeFretInput) previewTypeFret.textContent = selectedText(typeFretInput);
+    if (previewAgence && agenceInput) previewAgence.textContent = agenceInput.value || '-';
+    if (previewLivraison && livraisonInput) previewLivraison.textContent = livraisonInput.checked ? 'Oui' : 'Non';
+  }
+
+  [poidsInput, prixInput, restantInput, nbInput, typeFretInput, agenceInput, livraisonInput].forEach(function (el) {
+    if (!el) return;
+    el.addEventListener('input', updateFretPreview);
+    el.addEventListener('change', updateFretPreview);
+  });
+
+  updateFretPreview();
+});
+</script>
+
+<script>
+function printSection(sectionId) {
+  const section = document.getElementById(sectionId);
+  if (!section) return;
+
+  const printContents = section.innerHTML;
+  const originalContents = document.body.innerHTML;
+
+  document.body.innerHTML = `
+    <html>
+      <head>
+        <title>Impression bilan</title>
+        <style>
+          body { font-family: Arial, Helvetica, sans-serif; margin: 20px; color: #111; }
+          h2, h3, h4 { margin-top: 0; }
+          table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+          th, td { border: 1px solid #ccc; padding: 8px; font-size: 12px; text-align: left; }
+          th { background: #f3f4f6; }
+          .bilan-kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 16px 0; }
+          .kpi-card { border: 1px solid #ddd; padding: 12px; border-radius: 10px; }
+          .kpi-label { font-size: 11px; text-transform: uppercase; color: #666; margin-bottom: 6px; }
+          .kpi-value { font-size: 22px; font-weight: bold; }
+          .subtotals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+          .subtotals-card { border: 1px solid #ddd; padding: 12px; border-radius: 10px; }
+          .subtotal-line { padding: 6px 0; border-top: 1px solid #eee; }
+          .subtotal-line:first-child { border-top: none; }
+        </style>
+      </head>
+      <body>${printContents}</body>
+    </html>
+  `;
+
+  window.print();
+  document.body.innerHTML = originalContents;
+  window.location.reload();
+}
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const montantHtInput = document.getElementById("id_montant_ht");
+  const tauxTvaInput = document.getElementById("id_taux_tva");
+  const remiseInput = document.getElementById("id_remise");
+  const montantPayeInput = document.getElementById("id_montant_paye");
+
+  const expNomInput = document.getElementById("id_exp_nom");
+  const expPrenomInput = document.getElementById("id_exp_prenom");
+  const desNomInput = document.getElementById("id_des_nom");
+  const desPrenomInput = document.getElementById("id_des_prenom");
+  const refColisInput = document.getElementById("id_ref_colis");
+  const quiPayeInput = document.getElementById("id_qui_paye");
+  const typePieceInput = document.getElementById("id_type_piece");
+
+  const htPreview = document.getElementById("facture_montant_ht_preview");
+  const tvaPreview = document.getElementById("facture_montant_tva_preview");
+  const ttcPreview = document.getElementById("facture_montant_ttc_preview");
+  const restePreview = document.getElementById("facture_reste_preview");
+
+  const clientPreview = document.getElementById("facture_client_preview");
+  const refPreview = document.getElementById("facture_ref_preview");
+  const quiPayePreview = document.getElementById("facture_quipaye_preview");
+  const typePreview = document.getElementById("facture_type_preview");
+
+  function toNumber(value) {
+    const n = parseFloat((value || "0").replace(",", "."));
+    return isNaN(n) ? 0 : n;
+  }
+
+  function selectedText(el) {
+    if (!el) return "-";
+    if (el.tagName === "SELECT") {
+      const option = el.options[el.selectedIndex];
+      return option ? option.text : "-";
+    }
+    return el.value || "-";
+  }
+
+  function updateFacturePreview() {
+    const montantHt = toNumber(montantHtInput?.value);
+    const tauxTva = toNumber(tauxTvaInput?.value);
+    const remise = toNumber(remiseInput?.value);
+    const montantPaye = toNumber(montantPayeInput?.value);
+
+    const baseHt = Math.max(montantHt - remise, 0);
+    const montantTva = baseHt * (tauxTva / 100);
+    const totalTtc = baseHt + montantTva;
+    const reste = Math.max(totalTtc - montantPaye, 0);
+
+    if (htPreview) htPreview.textContent = baseHt.toFixed(2);
+    if (tvaPreview) tvaPreview.textContent = montantTva.toFixed(2);
+    if (ttcPreview) ttcPreview.textContent = totalTtc.toFixed(2);
+    if (restePreview) restePreview.textContent = reste.toFixed(2);
+
+    const quiPaye = quiPayeInput?.value || "EXP";
+    let client = "-";
+
+    if (quiPaye === "DES") {
+      client = `${desNomInput?.value || ""} ${desPrenomInput?.value || ""}`.trim() || "-";
+    } else {
+      client = `${expNomInput?.value || ""} ${expPrenomInput?.value || ""}`.trim() || "-";
+    }
+
+    if (clientPreview) clientPreview.textContent = client;
+    if (refPreview) refPreview.textContent = refColisInput?.value || "-";
+    if (quiPayePreview) quiPayePreview.textContent = selectedText(quiPayeInput);
+    if (typePreview) typePreview.textContent = selectedText(typePieceInput);
+  }
+
+  [
+    montantHtInput, tauxTvaInput, remiseInput, montantPayeInput,
+    expNomInput, expPrenomInput, desNomInput, desPrenomInput,
+    refColisInput, quiPayeInput, typePieceInput
+  ].forEach(el => {
+    if (el) {
+      el.addEventListener("input", updateFacturePreview);
+      el.addEventListener("change", updateFacturePreview);
+    }
+  });
+
+  updateFacturePreview();
+});
+</script>
+{% endblock %}

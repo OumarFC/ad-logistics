@@ -1,0 +1,110 @@
+{% extends "administration/base_admin.html" %}
+{% block title %}{{ titre_page }}{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">{{ titre_page }}</h2>
+            <a href="{% url 'admin_liste_entreprises' %}" class="btn btn-secondary">
+                Retour
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nom de l'entreprise</label>
+                            {{ form.nom }}
+                            {% if form.nom.errors %}
+                                <div class="text-danger small mt-1">{{ form.nom.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Code entreprise</label>
+                            {{ form.code }}
+                            {% if form.code.errors %}
+                                <div class="text-danger small mt-1">{{ form.code.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Téléphone</label>
+                            {{ form.telephone }}
+                            {% if form.telephone.errors %}
+                                <div class="text-danger small mt-1">{{ form.telephone.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Adresse</label>
+                            {{ form.adresse }}
+                            {% if form.adresse.errors %}
+                                <div class="text-danger small mt-1">{{ form.adresse.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Ville</label>
+                            {{ form.ville }}
+                            {% if form.ville.errors %}
+                                <div class="text-danger small mt-1">{{ form.ville.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Pays</label>
+                            {{ form.pays }}
+                            {% if form.pays.errors %}
+                                <div class="text-danger small mt-1">{{ form.pays.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Logo</label>
+                            {{ form.logo }}
+                            {% if form.logo.errors %}
+                                <div class="text-danger small mt-1">{{ form.logo.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-check mt-2">
+                                {{ form.actif }}
+                                <label class="form-check-label" for="{{ form.actif.id_for_label }}">
+                                    Entreprise active
+                                </label>
+                            </div>
+                            {% if form.actif.errors %}
+                                <div class="text-danger small mt-1">{{ form.actif.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{% url 'admin_liste_entreprises' %}" class="btn btn-light border">
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Colis {{ kind }} | Vue{% endblock %}
+{% block content %}
+<div class="container section">
+  <h2>Colis {{ kind }}</h2>
+  <p><strong>Référence :</strong> {{ obj.reference }}</p>
+  <p><strong>Statut :</strong> {{ obj.statut }}</p>
+
+  {% if kind == "RECU" %}
+    <p><strong>Expéditeur :</strong> {{ obj.expediteur_nom }} ({{ obj.expediteur_tel }})</p>
+    <p><strong>Destinataire :</strong> {{ obj.destinataire_nom }} ({{ obj.destinataire_tel }})</p>
+    <p><strong>Date enregistrement :</strong> {{ obj.date_enregistrement }}</p>
+    <p><strong>Restant :</strong> {{ obj.restant_euros }} €</p>
+    <p><strong>NBs :</strong> {{ obj.nbs }}</p>
+  {% else %}
+    <p><strong>Expéditeur :</strong> {{ obj.expediteur_nom }} ({{ obj.expediteur_tel }})</p>
+    <p><strong>Destinataire :</strong> {{ obj.destinataire_nom }} ({{ obj.destinataire_tel }})</p>
+    <p><strong>Date envoi :</strong> {{ obj.date_envoi }}</p>
+    <p><strong>Prix :</strong> {{ obj.prix_euros }} €</p>
+  {% endif %}
+
+  <p><strong>Description :</strong> {{ obj.description }}</p>
+  <div class="form-actions">
+    <a class="btn" href="{% url 'colis_edit' kind=kind pk=obj.id %}">Modifier</a>
+    <a class="btn" href="{% url 'colis_print' kind=kind pk=obj.id %}" target="_blank">Imprimer</a>
+    <a class="btn ghost" href="/app/#recherche">Retour</a>
+  </div>
+</div>
+{% endblock %}
+ 

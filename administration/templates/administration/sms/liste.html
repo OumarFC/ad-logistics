@@ -1,0 +1,70 @@
+{% extends "administration/base_admin.html" %}
+{% block title %}Paramétrage SMS{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Paramétrage SMS</h2>
+    <a href="{% url 'admin_ajouter_sms' %}" class="btn btn-primary">
+        + Nouveau paramétrage SMS
+    </a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2">
+            <div class="col-md-10">
+                <input type="text" name="q" value="{{ q }}" class="form-control"
+                       placeholder="Rechercher par entreprise, fournisseur ou expéditeur...">
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-outline-primary">Rechercher</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Entreprise</th>
+                        <th>Fournisseur</th>
+                        <th>Expéditeur</th>
+                        <th>SMS actif</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sms in sms_list %}
+                    <tr>
+                        <td>{{ sms.entreprise.nom }}</td>
+                        <td>{{ sms.get_fournisseur_display }}</td>
+                        <td>{{ sms.sender_name|default:"-" }}</td>
+                        <td>
+                            {% if sms.sms_actif %}
+                                <span class="badge bg-success">Oui</span>
+                            {% else %}
+                                <span class="badge bg-danger">Non</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'admin_modifier_sms' sms.pk %}" class="btn btn-sm btn-primary">
+                                Modifier
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            Aucun paramétrage SMS trouvé.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

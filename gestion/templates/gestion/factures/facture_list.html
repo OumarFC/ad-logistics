@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}Factures{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="mb-1">Factures / Devis / Avoirs</h2>
+      <p class="text-muted mb-0">Gestion des documents de facturation fret</p>
+    </div>
+    <a href="{% url 'facture_create' %}" class="btn btn-primary">
+      + Nouvelle facture
+    </a>
+  </div>
+
+  <form method="get" class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-5">
+          <input type="text" name="q" value="{{ q }}" class="form-control"
+                 placeholder="Numéro, réf colis, nom, téléphone...">
+        </div>
+
+        <div class="col-md-3">
+          <select name="type_piece" class="form-select">
+            <option value="">Tous les types</option>
+            {% for value, label in type_choices %}
+              <option value="{{ value }}" {% if type_piece == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <select name="statut" class="form-select">
+            <option value="">Tous les statuts</option>
+            {% for value, label in statut_choices %}
+              <option value="{{ value }}" {% if statut == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-2 d-grid">
+          <button type="submit" class="btn btn-dark">Filtrer</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="card shadow-sm border-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Numéro</th>
+            <th>Type</th>
+            <th>Réf colis</th>
+            <th>Client</th>
+            <th>Date</th>
+            <th>Échéance</th>
+            <th>Montant TTC</th>
+            <th>Payé</th>
+            <th>Reste</th>
+            <th>Statut</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for facture in page_obj %}
+            <tr>
+              <td><strong>{{ facture.numero }}</strong></td>
+              <td>{{ facture.get_type_piece_display }}</td>
+              <td>{{ facture.ref_colis }}</td>
+              <td>{{ facture.client_nom_complet }}</td>
+              <td>{{ facture.date_facture|date:"d/m/Y" }}</td>
+              <td>{{ facture.date_echeance|date:"d/m/Y" }}</td>
+              <td>{{ facture.montant_ttc }} {{ facture.devise }}</td>
+              <td>{{ facture.montant_paye }} {{ facture.devise }}</td>
+              <td>{{ facture.reste_a_payer }} {{ facture.devise }}</td>
+              <td>
+                {% if facture.statut == "PAYEE" %}
+                  <span class="badge bg-success">{{ facture.get_statut_display }}</span>
+                {% elif facture.statut == "PARTIEL" %}
+                  <span class="badge bg-warning text-dark">{{ facture.get_statut_display }}</span>
+                {% elif facture.statut == "RETARD" %}
+                  <span class="badge bg-danger">{{ facture.get_statut_display }}</span>
+                {% elif facture.statut == "ENVOYEE" %}
+                  <span class="badge bg-info text-dark">{{ facture.get_statut_display }}</span>
+                {% elif facture.statut == "ANNULEE" %}
+                  <span class="badge bg-secondary">{{ facture.get_statut_display }}</span>
+                {% else %}
+                  <span class="badge bg-dark">{{ facture.get_statut_display }}</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <a href="{% url 'facture_detail' facture.pk %}" class="btn btn-sm btn-outline-dark">Voir</a>
+                <a href="{% url 'facture_update' facture.pk %}" class="btn btn-sm btn-outline-primary">Modifier</a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="11" class="text-center text-muted py-4">
+                Aucune facture trouvée.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+      <div class="card-footer bg-white">
+        <nav>
+          <ul class="pagination mb-0">
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link"
+                   href="?q={{ q }}&type_piece={{ type_piece }}&statut={{ statut }}&page={{ page_obj.previous_page_number }}">
+                  Précédent
+                </a>
+              </li>
+            {% endif %}
+
+            <li class="page-item active">
+              <span class="page-link">
+                Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+              </span>
+            </li>
+
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link"
+                   href="?q={{ q }}&type_piece={{ type_piece }}&statut={{ statut }}&page={{ page_obj.next_page_number }}">
+                  Suivant
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

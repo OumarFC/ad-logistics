@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% block title %}{{ facture.numero }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+      <h2 class="mb-1">{{ facture.numero }}</h2>
+      <p class="text-muted mb-0">
+        {{ facture.get_type_piece_display }} - Réf colis : {{ facture.ref_colis }}
+      </p>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+      <a href="{% url 'facture_update' facture.pk %}" class="btn btn-primary">Modifier</a>
+      <a href="{% url 'facture_print' facture.pk %}" class="btn btn-outline-dark" target="_blank">Imprimer</a>
+      <a href="{% url 'facture_pdf_download' facture.pk %}" class="btn btn-outline-primary">Télécharger PDF</a>
+      <a href="{% url 'facture_email_compose' facture.pk %}" class="btn">Envoyer par e-mail</a>
+      <a href="{% url 'facture_refresh_qrcode' facture.pk %}" class="btn btn-outline-dark">Régénérer QR</a>
+      <a href="{% url 'facture_list' %}" class="btn btn-outline-secondary">Retour</a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5 class="border-bottom pb-2">Informations générales</h5>
+          <div class="row g-3">
+            <div class="col-md-4"><strong>Type :</strong> {{ facture.get_type_piece_display }}</div>
+            <div class="col-md-4"><strong>Date facture :</strong> {{ facture.date_facture|date:"d/m/Y" }}</div>
+            <div class="col-md-4"><strong>Échéance :</strong> {{ facture.date_echeance|date:"d/m/Y" }}</div>
+            <div class="col-md-4"><strong>Réf colis :</strong> {{ facture.ref_colis }}</div>
+            <div class="col-md-4"><strong>Date colis :</strong> {{ facture.date_colis|date:"d/m/Y" }}</div>
+            <div class="col-md-4"><strong>Agence :</strong> {{ facture.des_agence|default:"-" }}</div>
+            <div class="col-md-4"><strong>Produit :</strong> {{ facture.produit|default:"-" }}</div>
+            <div class="col-md-4"><strong>Poids :</strong> {{ facture.poids_kg }} kg</div>
+            <div class="col-md-4"><strong>Nb colis :</strong> {{ facture.nb_colis }}</div>
+            <div class="col-md-12"><strong>Description :</strong> {{ facture.description|default:"-" }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5 class="border-bottom pb-2">Expéditeur / Destinataire</h5>
+          <div class="row g-4">
+            <div class="col-md-6">
+              <h6>Expéditeur</h6>
+              <div><strong>Nom :</strong> {{ facture.exp_nom }} {{ facture.exp_prenom }}</div>
+              <div><strong>Téléphone :</strong> {{ facture.exp_tel|default:"-" }}</div>
+              <div><strong>Email :</strong> {{ facture.exp_mail|default:"-" }}</div>
+              <div><strong>Adresse :</strong> {{ facture.exp_adresse|default:"-" }}</div>
+            </div>
+            <div class="col-md-6">
+              <h6>Destinataire</h6>
+              <div><strong>Nom :</strong> {{ facture.des_nom }} {{ facture.des_prenom }}</div>
+              <div><strong>Téléphone :</strong> {{ facture.des_tel|default:"-" }}</div>
+              <div><strong>Email :</strong> {{ facture.des_mail|default:"-" }}</div>
+              <div><strong>Adresse :</strong> {{ facture.des_adresse|default:"-" }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="border-bottom pb-2">Notes</h5>
+          <p><strong>Note client :</strong><br>{{ facture.note_client|linebreaksbr|default:"-" }}</p>
+          <p class="mb-0"><strong>Note interne :</strong><br>{{ facture.note_interne|linebreaksbr|default:"-" }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5 class="border-bottom pb-2">Résumé financier</h5>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Qui paye</span>
+            <strong>{{ facture.get_qui_paye_display }}</strong>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Montant HT</span>
+            <strong>{{ facture.montant_ht }} {{ facture.devise }}</strong>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>TVA</span>
+            <strong>{{ facture.montant_tva }} {{ facture.devise }}</strong>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Remise</span>
+            <strong>{{ facture.remise }} {{ facture.devise }}</strong>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Total TTC</span>
+            <strong>{{ facture.montant_ttc }} {{ facture.devise }}</strong>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Montant payé</span>
+            <strong>{{ facture.montant_paye }} {{ facture.devise }}</strong>
+          </div>
+          <div class="d-flex justify-content-between pt-2 border-top">
+            <span>Reste à payer</span>
+            <strong>{{ facture.reste_a_payer }} {{ facture.devise }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5 class="border-bottom pb-2">Statut</h5>
+
+          <p>
+            {% if facture.statut == "PAYEE" %}
+              <span class="badge bg-success">{{ facture.get_statut_display }}</span>
+            {% elif facture.statut == "PARTIEL" %}
+              <span class="badge bg-warning text-dark">{{ facture.get_statut_display }}</span>
+            {% elif facture.statut == "RETARD" %}
+              <span class="badge bg-danger">{{ facture.get_statut_display }}</span>
+            {% elif facture.statut == "ENVOYEE" %}
+              <span class="badge bg-info text-dark">{{ facture.get_statut_display }}</span>
+            {% elif facture.statut == "ANNULEE" %}
+              <span class="badge bg-secondary">{{ facture.get_statut_display }}</span>
+            {% else %}
+              <span class="badge bg-dark">{{ facture.get_statut_display }}</span>
+            {% endif %}
+          </p>
+
+          <div class="d-grid gap-2">
+            <a href="{% url 'facture_change_statut' facture.pk 'VALIDE' %}" class="btn btn-outline-dark btn-sm">Marquer validée</a>
+            <a href="{% url 'facture_change_statut' facture.pk 'ENVOYEE' %}" class="btn btn-outline-info btn-sm">Marquer envoyée</a>
+            <a href="{% url 'facture_change_statut' facture.pk 'PAYEE' %}" class="btn btn-outline-success btn-sm">Marquer payée</a>
+            <a href="{% url 'facture_change_statut' facture.pk 'ANNULEE' %}" class="btn btn-outline-danger btn-sm">Annuler</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body text-center">
+          <h5 class="border-bottom pb-2">QR Code facture</h5>
+
+          {% if facture.qr_code_image %}
+            <div class="mb-3">
+              <img
+                src="{{ facture.qr_code_image.url }}"
+                alt="QR Code facture"
+                class="img-fluid facture-qr-image"
+              >
+            </div>
+            <p class="text-muted small mb-0">
+              Scanner pour afficher les informations de la facture.
+            </p>
+          {% else %}
+            <p class="text-muted mb-0">QR code non disponible.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5 class="border-bottom pb-2">Historique</h5>
+          <div><strong>Créée le :</strong> {{ facture.created_at|date:"d/m/Y H:i" }}</div>
+          <div><strong>Modifiée le :</strong> {{ facture.updated_at|date:"d/m/Y H:i" }}</div>
+          <div><strong>Envoyée le :</strong> {{ facture.date_envoi_email|date:"d/m/Y H:i"|default:"-" }}</div>
+          <div><strong>Date paiement :</strong> {{ facture.date_paiement|date:"d/m/Y"|default:"-" }}</div>
+        </div>
+      </div>
+
+      {% if envois_email %}
+      <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body">
+          <h5 class="border-bottom pb-2">Historique des envois e-mail</h5>
+          <div class="table-responsive">
+            <table class="table table-sm align-middle">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Destinataire</th>
+                  <th>Sujet</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in envois_email %}
+                  <tr>
+                    <td>{{ item.created_at|date:"d/m/Y H:i" }}</td>
+                    <td>{{ item.email_destinataire }}</td>
+                    <td>{{ item.sujet }}</td>
+                    <td>
+                      {% if item.succes %}
+                        <span class="badge success">Envoyé</span>
+                      {% else %}
+                        <span class="badge danger">Échec</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .facture-qr-image{
+    width: 180px;
+    max-width: 100%;
+    height: auto;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  }
+</style>
+{% endblock %}

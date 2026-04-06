@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Supprimer transfert {{ obj.reference }}{% endblock %}
+
+{% block content %}
+<div class="section">
+  <div class="container">
+    <h1>Supprimer le transfert {{ obj.reference }}</h1>
+
+    <p>Voulez-vous vraiment supprimer ce transfert ?</p>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-actions">
+        <button class="btn" type="submit">Oui, supprimer</button>
+        <a href="/app/#envoye" class="btn ghost">Annuler</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

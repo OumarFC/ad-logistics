@@ -1,0 +1,78 @@
+{% extends "administration/base_admin.html" %}
+{% block title %}Entreprises clientes{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Entreprises clientes</h2>
+    <a href="{% url 'admin_ajouter_entreprise' %}" class="btn btn-primary">
+        + Nouvelle entreprise
+    </a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2">
+            <div class="col-md-10">
+                <input type="text" name="q" value="{{ q }}" class="form-control"
+                       placeholder="Rechercher par nom, code, téléphone, email, ville, pays...">
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-outline-primary">Rechercher</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Entreprise</th>
+                        <th>Code</th>
+                        <th>Téléphone</th>
+                        <th>Email</th>
+                        <th>Ville</th>
+                        <th>Pays</th>
+                        <th>Statut</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entreprise in entreprises %}
+                    <tr>
+                        <td>
+                            <strong>{{ entreprise.nom }}</strong>
+                        </td>
+                        <td>{{ entreprise.code }}</td>
+                        <td>{{ entreprise.telephone|default:"-" }}</td>
+                        <td>{{ entreprise.email|default:"-" }}</td>
+                        <td>{{ entreprise.ville|default:"-" }}</td>
+                        <td>{{ entreprise.pays|default:"-" }}</td>
+                        <td>
+                            {% if entreprise.actif %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'admin_modifier_entreprise' entreprise.pk %}" class="btn btn-sm btn-primary">
+                                Modifier
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            Aucune entreprise cliente trouvée.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

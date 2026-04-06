@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Détail SMS{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <h3 class="mb-4">Détail du SMS</h3>
+
+      <p><strong>Date :</strong> {{ sms.created_at|date:"d/m/Y H:i" }}</p>
+      <p><strong>Numéro :</strong> {{ sms.numero }}</p>
+      <p><strong>Client :</strong> {{ sms.client_nom|default:"-" }}</p>
+      <p><strong>Statut :</strong> {{ sms.statut }}</p>
+      <p><strong>Provider :</strong> {{ sms.provider }}</p>
+      <p><strong>ID provider :</strong> {{ sms.provider_message_id|default:"-" }}</p>
+      <p><strong>Erreur :</strong> {{ sms.erreur|default:"-" }}</p>
+
+      <div class="mb-3">
+        <strong>Message :</strong>
+        <div style="white-space:pre-line; border:1px solid #ddd; padding:12px; border-radius:10px; margin-top:8px;">
+          {{ sms.message }}
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <a href="/app/#sms" class="btn btn-secondary">Retour</a>
+        <a href="{% url 'sms_modifier' sms.id %}" class="btn btn-primary">Modifier et renvoyer</a>
+        <a href="{% url 'sms_renvoyer' sms.id %}" class="btn btn-outline-primary">Renvoyer</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

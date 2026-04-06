@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Connexion | AD Logistics{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="auth-card">
+      <h1>Connexion à l’espace services</h1>
+      <p class="auth-subtitle">
+        Accès réservé au personnel AD Logistics (staff / admin).
+      </p>
+
+      {% if form.errors %}
+        <div class="alert alert-danger">
+          Identifiant ou mot de passe incorrect.
+        </div>
+      {% endif %}
+
+      <form method="post" class="auth-form">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.GET.next|default:'' }}">
+
+        <div class="form-row">
+          <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+          {{ form.username }}
+        </div>
+
+        <div class="form-row">
+          <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+          {{ form.password }}
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Se connecter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

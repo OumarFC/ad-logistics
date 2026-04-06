@@ -1,0 +1,94 @@
+{% extends "administration/base_admin.html" %}
+{% block title %}{{ titre_page }}{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">{{ titre_page }}</h2>
+            <a href="{% url 'admin_liste_villes' %}" class="btn btn-secondary">
+                Retour
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Entreprise cliente</label>
+                            {{ form.entreprise }}
+                            {% if form.entreprise.errors %}
+                                <div class="text-danger small mt-1">{{ form.entreprise.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Nom de la ville</label>
+                            {{ form.nom }}
+                            {% if form.nom.errors %}
+                                <div class="text-danger small mt-1">{{ form.nom.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Pays</label>
+                            {{ form.pays }}
+                            {% if form.pays.errors %}
+                                <div class="text-danger small mt-1">{{ form.pays.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Zone</label>
+                            {{ form.zone }}
+                            {% if form.zone.errors %}
+                                <div class="text-danger small mt-1">{{ form.zone.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Délai estimé (jours)</label>
+                            {{ form.delai_estime_jours }}
+                            {% if form.delai_estime_jours.errors %}
+                                <div class="text-danger small mt-1">{{ form.delai_estime_jours.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Frais de livraison</label>
+                            {{ form.frais_livraison }}
+                            {% if form.frais_livraison.errors %}
+                                <div class="text-danger small mt-1">{{ form.frais_livraison.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 d-flex align-items-end">
+                            <div class="form-check mb-2">
+                                {{ form.actif }}
+                                <label class="form-check-label" for="{{ form.actif.id_for_label }}">
+                                    Ville active
+                                </label>
+                            </div>
+                            {% if form.actif.errors %}
+                                <div class="text-danger small mt-1">{{ form.actif.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{% url 'admin_liste_villes' %}" class="btn btn-light border">
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
